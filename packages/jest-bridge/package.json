@@ -1,6 +1,6 @@
 {
     "name": "@reactlib/jest-bridge",
-    "version": "0.0.1-alpha.0+93fd2ba",
+    "version": "0.0.1-alpha.1+ffda984",
     "license": "MIT",
     "scripts": {
         "build": "echo \"No build required\"",
@@ -24,5 +24,8 @@
         "ts-jest": "^26.5.0",
         "typescript": "^4.1.3"
     },
-    "gitHead": "93fd2ba55be2602cba82d0910f1f0b8322604a99"
+    "publishConfig": {
+        "access": "public"
+    },
+    "gitHead": "ffda9849fc746d8d9b9518fed98825cd55dd0e72"
 }
