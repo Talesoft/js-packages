@@ -1,0 +1,8 @@
+/node_modules
+/packages/*/node_modules
+.idea
+/package-lock.json
+/packages/*/package-lock.json
+/yarn.lock
+/packages/*/yarn.lock
+/packages/*/esm
