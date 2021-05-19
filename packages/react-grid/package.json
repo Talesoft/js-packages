@@ -1,7 +1,7 @@
 {
     "private": true,
     "name": "@talesoft/react-grid",
-    "version": "0.0.1",
+    "version": "0.1.0",
     "license": "MIT",
     "main": "cjs/index.js",
     "types": "esm/index.d.ts",
@@ -18,9 +18,9 @@
         "@talesoft/theme": "*"
     },
     "devDependencies": {
-        "@talesoft/jest-bridge": "^0.0.1",
-        "@talesoft/reducer": "^0.0.1",
-        "@talesoft/use-async": "^0.0.1",
+        "@talesoft/jest-bridge": "^0.1.0",
+        "@talesoft/reducer": "^0.1.0",
+        "@talesoft/use-async": "^0.1.0",
         "@types/jest": "^26.0.20",
         "@types/node": "^14.14.25",
         "@types/react": "^17.0.1",
