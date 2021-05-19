@@ -1,4 +1,5 @@
 {
+    "private": true,
     "name": "@talesoft/react-router",
     "license": "MIT",
     "main": "cjs/index.js",

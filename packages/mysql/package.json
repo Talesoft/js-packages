@@ -1,4 +1,5 @@
 {
+    "private": true,
     "name": "@talesoft/mysql",
     "license": "MIT",
     "main": "cjs/index.js",

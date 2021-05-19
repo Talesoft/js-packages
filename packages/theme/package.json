@@ -1,4 +1,5 @@
 {
+    "private": true,
     "name": "@talesoft/theme",
     "license": "MIT",
     "main": "cjs/index.js",
