@@ -3,5 +3,5 @@ module.exports = {
     testEnvironment: 'node',
     testRegex: '/src/.*\\.test\\.tsx?$',
     moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json', 'node'],
-    resolver: '@reactlib/jest-bridge/cjs/resolve.cjs',
+    resolver: '@talesoft/jest-bridge/cjs/resolve.cjs',
 }

@@ -1,6 +1,6 @@
 {
-    "name": "@reactlib/jest-bridge",
-    "version": "0.0.1-alpha.1+ffda984",
+    "name": "@talesoft/jest-bridge",
+    "version": "0.0.1",
     "license": "MIT",
     "scripts": {
         "build": "echo \"No build required\"",
@@ -26,6 +26,5 @@
     },
     "publishConfig": {
         "access": "public"
-    },
-    "gitHead": "ffda9849fc746d8d9b9518fed98825cd55dd0e72"
+    }
 }
