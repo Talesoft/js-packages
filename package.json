@@ -7,7 +7,10 @@
         "build": "lerna run build --no-bail",
         "build:try-catch": "lerna run build --no-bail --scope=@talesoft/try-catch",
         "build:finished": "lerna run build --no-bail --scope=@talesoft/try-catch --scope=@talesoft/use-async --scope=@talesoft/use-storage",
-        "publish:finished": "lerna publish --no-bail --scope=@talesoft/try-catch --scope=@talesoft/use-async --scope=@talesoft/use-storage",
+        "publish:alpha": "lerna publish --canary --preid alpha",
+        "publish:beta": "lerna publish --canary --preid beta",
+        "publish:rc": "lerna publish --canary --preid rc",
+        "publish:release": "lerna publish",
         "postinstall": "yarn bootstrap"
     },
     "dependencies": {
