@@ -12,10 +12,10 @@
         "lint:fix": "eslint \"src/**/*.ts\" --fix"
     },
     "peerDependencies": {
-        "react": "*",
         "@emotion/react": "*",
         "@emotion/styled": "*",
-        "@talesoft/theme": "*"
+        "@talesoft/theme": "*",
+        "react": "*"
     },
     "devDependencies": {
         "@talesoft/jest-bridge": "^0.1.0",
