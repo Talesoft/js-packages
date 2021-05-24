@@ -41,3 +41,16 @@ INFORMATION: Unsupported notification method: $/setTraceNotification
 [0m2021.05.03 22:15:39 WARN  Build server is not auto-connectable.[0m
 [0m2021.05.03 22:15:39 WARN  no build tool detected in workspace 'C:\Projekte\talesoft-js-packages'. The most common cause for this problem is that the editor was opened in the wrong working directory, for example if you use sbt then the workspace directory should contain build.sbt. [0m
 [0m2021.05.04 11:52:28 INFO  shutting down Metals[0m
+[0m2021.05.20 23:23:38 INFO  Started: Metals version 0.10.3 in workspace 'C:\Projekte\talesoft-js-packages' for client Visual Studio Code 1.56.2.[0m
+[0m2021.05.20 23:23:40 INFO  time: initialize in 2.31s[0m
+[0m2021.05.20 23:23:41 WARN  Build server is not auto-connectable.[0m
+[0m2021.05.20 23:23:41 WARN  no build tool detected in workspace 'C:\Projekte\talesoft-js-packages'. The most common cause for this problem is that the editor was opened in the wrong working directory, for example if you use sbt then the workspace directory should contain build.sbt. [0m
+Mai 21, 2021 12:19:12 AM org.eclipse.lsp4j.jsonrpc.services.GenericEndpoint notify
+INFORMATION: Unsupported notification method: $/setTrace
+Mai 21, 2021 12:20:13 AM org.eclipse.lsp4j.jsonrpc.services.GenericEndpoint notify
+INFORMATION: Unsupported notification method: $/setTrace
+[0m2021.05.21 16:09:48 INFO  Started: Metals version 0.10.3 in workspace 'C:\Projekte\talesoft-js-packages' for client Visual Studio Code 1.56.2.[0m
+[0m2021.05.21 16:09:55 INFO  time: initialize in 6.48s[0m
+[0m2021.05.21 16:09:55 WARN  Build server is not auto-connectable.[0m
+[0m2021.05.21 16:09:55 WARN  no build tool detected in workspace 'C:\Projekte\talesoft-js-packages'. The most common cause for this problem is that the editor was opened in the wrong working directory, for example if you use sbt then the workspace directory should contain build.sbt. [0m
+[0m2021.05.22 01:08:11 INFO  shutting down Metals[0m

@@ -1,0 +1,80 @@
+{
+  "name": "@talesoft/react-forms",
+  "version": "0.1.1",
+  "license": "MIT",
+  "main": "cjs/index.js",
+  "types": "esm/index.d.ts",
+  "description": "A form handling library for React that is built to be blazing fast with many fields",
+  "keywords": [
+    "react",
+    "form",
+    "field",
+    "fast",
+    "performance",
+    "performant",
+    "array",
+    "forms",
+    "formik",
+    "immutablejs",
+    "immutable.js"
+  ],
+  "scripts": {
+    "build": "tsc && babel src --out-dir cjs --extensions .ts,.tsx --delete-dir-on-start",
+    "test": "jest",
+    "lint": "eslint \"src/**/*.ts\"",
+    "lint:fix": "eslint \"src/**/*.ts\" --fix",
+    "storybook": "start-storybook -p 6006 --docs"
+  },
+  "peerDependencies": {
+    "react": "*",
+    "yup": "*"
+  },
+  "dependencies": {
+    "immutable": "^4.0.0-rc.12"
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.12.13",
+    "@babel/core": "^7.12.13",
+    "@babel/preset-env": "^7.12.13",
+    "@babel/preset-react": "^7.12.13",
+    "@babel/preset-typescript": "^7.12.13",
+    "@emotion/react": "^11.1.5",
+    "@emotion/styled": "^11.3.0",
+    "@storybook/addon-actions": "^6.2.9",
+    "@storybook/addon-links": "^6.2.9",
+    "@storybook/addon-docs": "^6.2.9",
+    "@storybook/addons": "^6.2.9",
+    "@storybook/preset-typescript": "^3.0.0",
+    "@storybook/react": "^6.2.9",
+    "@storybook/theming": "^6.2.9",
+    "@types/jest": "^26.0.20",
+    "@types/node": "^14.14.25",
+    "@types/react": "^17.0.1",
+    "@typescript-eslint/eslint-plugin": "^4.14.2",
+    "@typescript-eslint/parser": "^4.14.2",
+    "eslint": "^7.19.0",
+    "eslint-config-prettier": "^7.2.0",
+    "eslint-plugin-prettier": "^3.3.1",
+    "jest": "^26.6.3",
+    "jest-resolve": "^26.6.2",
+    "prettier": "^2.2.1",
+    "react": "^17.0.2",
+    "react-dom": "^17.0.2",
+    "ts-jest": "^26.5.0",
+    "typescript": "^4.2.4",
+    "immutable": "^4.0.0-rc.12",
+    "bootstrap": "^4.5.0",
+    "bootswatch": "^4.5.0",
+    "yup": "^0.32.9",
+    "babel-loader": "^8.2.2",
+    "ts-loader": "^8.2.0",
+    "css-loader": "^5.2.5",
+    "webpack": "^5.37.1",
+    "webpack-cli": "^4.7.0",
+    "webpack-node-externals": "^3.0.0",
+    "react-docgen-typescript-loader": "^3.7.2"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}
