@@ -9,7 +9,7 @@
     "build:react-forms": "lerna run build --no-bail --scope=@talesoft/react-forms",
     "build:finished": "lerna run build --no-bail --scope=@talesoft/try-catch --scope=@talesoft/use-async --scope=@talesoft/use-storage --scope=@talesoft/react-forms",
     "publish:dev": "lerna publish --canary --preid dev",
-    "publish:release": "lerna publish",
+    "publish": "lerna publish",
     "storybook:react-forms": "lerna run storybook --parallel --scope=@talesoft/react-forms",
     "postinstall": "yarn bootstrap"
   },
