@@ -64,8 +64,6 @@ function createValidator<Value extends Record<string, unknown>>(
     }
     return {}
   }
-
-  return undefined
 }
 
 export default function createFormDispatchers<Value extends Record<string, unknown>>(

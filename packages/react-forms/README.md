@@ -52,32 +52,36 @@ import { Form, FormElement, InputField } from '@talesoft/react-forms'
 import { useMemo } from 'react'
 
 function MyForm(): JSX.Element {
-    const initialValue = useMemo(() => ({
-        email: '',
-        password: '',
-    }), [])
 
-    function onSubmit(value) {
-        myApi.tokens.create({
-            email: value.email,
-            password: value.password,
-        })
-    }
+  // The initial values of the form inputs
+  // Make sure it keeps referential integrity
+  const initialValue = useMemo(() => ({
+    email: '',
+    password: '',
+  }), [])
 
-    return (
-        {/* This is the core of a form */}
-        <Form initialValue={initialValue} onSubmit={onSubmit}>
-            {/* The HTML Form element */}
-            <FormElement>
-                {/* This acts like a normal HTML <input /> */}
-                <InputField type="email" name="email" />
+  // The function that is called when 
+  function onSubmit(value) {
+    myApi.tokens.create({
+      email: value.email,
+      password: value.password,
+    })
+  }
 
-                <InputField type="password" name="password" />
+  return (
+    {/* This is the core of a form */}
+    <Form initialValue={initialValue} onSubmit={onSubmit}>
+      {/* The HTML Form element */}
+      <FormElement>
+        {/* This acts like a normal HTML <input /> */}
+        <InputField type="email" name="email" />
 
-                <button type="submit">Login</button>
-            </FormElement>
-        </Form>
-    )
+        <InputField type="password" name="password" />
+
+        <button type="submit">Login</button>
+      </FormElement>
+    </Form>
+  )
 }
 ```
 
@@ -88,34 +92,34 @@ import { Form, FormElement, InputField } from '@talesoft/react-forms'
 import { useMemo } from 'react'
 
 function MyForm(): JSX.Element {
-    const initialValue = useMemo(() => ({
-        firstName: 'John',
-        lastName: 'Doe',
-        social: {
-            linkedIn: '',
-            twitter: '',
-            facebook: '',
-        },
-    }), [])
+  const initialValue = useMemo(() => ({
+    firstName: 'John',
+    lastName: 'Doe',
+    social: {
+      linkedIn: '',
+      twitter: '',
+      facebook: '',
+    },
+  }), [])
 
-    function onSubmit(value) {
-        myApi.users.update(value)
-    }
+  function onSubmit(value) {
+    myApi.users.update(value)
+  }
 
-    return (
-        <Form initialValue={initialValue} onSubmit={onSubmit}>
-            <FormElement>
-                <InputField name="firstName" />
-                <InputField name="lastName" />
+  return (
+    <Form initialValue={initialValue} onSubmit={onSubmit}>
+      <FormElement>
+        <InputField name="firstName" />
+        <InputField name="lastName" />
 
-                <InputField name="social.linkedIn" />
-                <InputField name="social.twitter" />
-                <InputField name="social.facebook" />
+        <InputField name="social.linkedIn" />
+        <InputField name="social.twitter" />
+        <InputField name="social.facebook" />
 
-                <button type="submit">Update</button>
-            </FormElement>
-        </Form>
-    )
+        <button type="submit">Update</button>
+      </FormElement>
+    </Form>
+  )
 }
 ```
 
@@ -123,62 +127,62 @@ function MyForm(): JSX.Element {
 
 ```jsx
 import {
-    Form,
-    FormElement,
-    InputField,
-    FieldArray,
-    SelectField
+  Form,
+  FormElement,
+  InputField,
+  FieldArray,
+  SelectField
 } from '@talesoft/react-forms'
 import { useMemo } from 'react'
 
 function MyForm(): JSX.Element {
-    const initialValue = useMemo(() => ({
-        address: '',
-        openingHours: [
-            {
-                weekday: 'mo',
-                startTime: '10:30:00',
-                endTime: '18:30:00',
-            },
-        ]
-    }), [])
+  const initialValue = useMemo(() => ({
+    address: '',
+    openingHours: [
+      {
+        weekday: 'mo',
+        startTime: '10:30:00',
+        endTime: '18:30:00',
+      },
+    ]
+  }), [])
 
-    function onSubmit(value) {
-        myApi.users.update(value)
-    }
+  function onSubmit(value) {
+    myApi.users.update(value)
+  }
 
-    return (
-        <Form initialValue={initialValue} onSubmit={onSubmit}>
-            <FormElement>
-                <InputField name="address" />
-                
-                <h3>Opening Hours</h3>
-                <FieldArray name="openingHours">
-                    {({ map, push }) => (
-                        <div>
-                            {map(({ key, childName, remove }) => (
-                                <div key={key}>
-                                    <SelectField name={childName('weekday')}>
-                                        <option value="mo">Monday</option>
-                                        <option value="tu">Tuesday</option>
-                                        <option value="we">Wednesday</option>
-                                        {/* etc.. */}
-                                    </SelectField>
-                                    <InputField type="time" name={childName('startTime')} />
-                                    <InputField type="time" name={childName('endTime')} />
-                                </div>
-                            ))}
-                            <button type="button" onClick={() => push(initialValue)}>
-                                Add another weekday
-                            </button>
-                        </div>
-                    )}
-                </FieldArray>
+  return (
+    <Form initialValue={initialValue} onSubmit={onSubmit}>
+      <FormElement>
+        <InputField name="address" />
+        
+        <h3>Opening Hours</h3>
+        <FieldArray name="openingHours">
+          {({ map, push }) => (
+            <div>
+              {map(({ key, childName, remove }) => (
+                <div key={key}>
+                  <SelectField name={childName('weekday')}>
+                    <option value="mo">Monday</option>
+                    <option value="tu">Tuesday</option>
+                    <option value="we">Wednesday</option>
+                    {/* etc.. */}
+                  </SelectField>
+                  <InputField type="time" name={childName('startTime')} />
+                  <InputField type="time" name={childName('endTime')} />
+                </div>
+              ))}
+              <button type="button" onClick={() => push(initialValue)}>
+                Add another weekday
+              </button>
+            </div>
+          )}
+        </FieldArray>
 
-                <button type="submit">Update</button>
-            </FormElement>
-        </Form>
-    )
+        <button type="submit">Update</button>
+      </FormElement>
+    </Form>
+  )
 }
 ```
 
@@ -190,65 +194,65 @@ import React, { useMemo } from 'react'
 import { useFieldArray } from '@talesoft/react-forms'
 
 export default function OpeningHoursField({ name }) {
-    const { map, push } = useFieldArray(name)
-    return (
+  const { map, push } = useFieldArray(name)
+  return (
+    <div>
+      {map(({ childName, remove }) => (
         <div>
-            {map(({ childName, remove }) => (
-                <div>
-                    <SelectField name={childName('weekday')}>
-                        <option value="mo">Monday</option>
-                        <option value="tu">Tuesday</option>
-                        <option value="we">Wednesday</option>
-                        {/* etc.. */}
-                    </SelectField>
-                    <InputField type="time" name={childName('startTime')} />
-                    <InputField type="time" name={childName('endTime')}/>
-                </div>
-            ))}
-            <button type="button" onClick={() => push(initialValue)}>
-                Add another weekday
-            </button>
+          <SelectField name={childName('weekday')}>
+            <option value="mo">Monday</option>
+            <option value="tu">Tuesday</option>
+            <option value="we">Wednesday</option>
+            {/* etc.. */}
+          </SelectField>
+          <InputField type="time" name={childName('startTime')} />
+          <InputField type="time" name={childName('endTime')}/>
         </div>
-    )
+      ))}
+      <button type="button" onClick={() => push(initialValue)}>
+        Add another weekday
+      </button>
+    </div>
+  )
 }
 ```
 
 ```jsx
 // MyForm.jsx
 import {
-    Form,
-    FormElement,
+  Form,
+  FormElement,
 } from '@talesoft/react-forms'
 import OpeningHoursField from './OpeningHoursField'
 import React, { useMemo } from 'react'
 
 function MyForm() {
-    const initialValue = useMemo(() => ({
-        address: '',
-        openingHours: [
-            {
-                weekday: 'mo',
-                startTime: '10:30:00',
-                endTime: '18:30:00',
-            },
-        ]
-    }), [])
+  const initialValue = useMemo(() => ({
+    address: '',
+    openingHours: [
+      {
+        weekday: 'mo',
+        startTime: '10:30:00',
+        endTime: '18:30:00',
+      },
+    ]
+  }), [])
 
-    function onSubmit(value) {
-        myApi.users.update(value)
-    }
+  function onSubmit(value) {
+    myApi.users.update(value)
+  }
 
-    return (
-        <Form initialValue={initialValue} onSubmit={onSubmit}>
-            <FormElement>
-                <InputField name="address" />
-                
-                <h3>Opening Hours</h3>
-                <OpeningHoursField name="openingHours" />
+  return (
+    <Form initialValue={initialValue} onSubmit={onSubmit}>
+      <FormElement>
+        <InputField name="address" />
+        
+        <h3>Opening Hours</h3>
+        <OpeningHoursField name="openingHours" />
 
-                <button type="submit">Update</button>
-            </FormElement>
-        </Form>
-    )
+        <button type="submit">Update</button>
+      </FormElement>
+    </Form>
+  )
 }
 ```
