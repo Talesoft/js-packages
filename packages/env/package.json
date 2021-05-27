@@ -1,6 +1,6 @@
 {
   "name": "@talesoft/env",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "license": "MIT",
   "types": "esm/index.d.ts",
   "bin": {

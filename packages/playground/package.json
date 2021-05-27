@@ -1,6 +1,6 @@
 {
   "name": "@talesoft/playground",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "license": "MIT",
   "types": "esm/index.d.ts",
   "private": true,
@@ -12,7 +12,7 @@
     "env-test": "with-env a=b a2=\"b2 b3 b4\" c d \"e f g\" h"
   },
   "devDependencies": {
-    "@talesoft/env": "^0.0.0",
+    "@talesoft/env": "^0.1.0",
     "@talesoft/jest-bridge": "^0.1.1",
     "@types/jest": "^26.0.20",
     "@types/node": "^14.14.25",
