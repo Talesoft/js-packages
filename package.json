@@ -8,6 +8,8 @@
     "build:try-catch": "lerna run build --no-bail --scope=@talesoft/try-catch",
     "build:react-forms": "lerna run build --no-bail --scope=@talesoft/react-forms",
     "build:env": "lerna run build --no-bail --scope=@talesoft/env",
+    "build:schema": "lerna run build --no-bail --scope=@talesoft/schema",
+    "build:openapi": "lerna run build --no-bail --scope=@talesoft/openapi",
     "build:finished": "lerna run build --no-bail --scope=@talesoft/try-catch --scope=@talesoft/use-async --scope=@talesoft/use-storage --scope=@talesoft/react-forms",
     "publish:dev": "lerna publish --canary --preid dev",
     "publish": "lerna publish",
