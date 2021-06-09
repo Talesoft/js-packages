@@ -1,1 +1,1 @@
-export { default as default } from './tryCatch'
+export { default as default } from './jsonPointer'

@@ -1,6 +1,6 @@
 {
-    "name": "@talesoft/json-pointer",
-    "version": "0.1.1",
+    "name": "@talesoft/result",
+    "version": "0.1.0",
     "license": "MIT",
     "main": "cjs/index.js",
     "types": "esm/index.d.ts",

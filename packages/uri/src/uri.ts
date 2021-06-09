@@ -1,79 +1,76 @@
-export type GenericDelimiter = ':' | '/' | '?' | '#' | '[' | ']' | '@'
-export type SubDelimiter = '!' | '$' | '&' | "'" | '(' | ')' | '*' | '+' | ',' | ';' | '='
-export type UppercaseAlphabeticalLetter =
-  | 'A'
-  | 'B'
-  | 'C'
-  | 'D'
-  | 'E'
-  | 'F'
-  | 'G'
-  | 'H'
-  | 'I'
-  | 'J'
-  | 'K'
-  | 'L'
-  | 'M'
-  | 'N'
-  | 'O'
-  | 'P'
-  | 'Q'
-  | 'R'
-  | 'S'
-  | 'T'
-  | 'U'
-  | 'V'
-  | 'W'
-  | 'X'
-  | 'Y'
-  | 'Z'
-export type LowercaseAlphabeticalLetter = Lowercase<UppercaseAlphabeticalLetter>
+import type { Result } from '@talesoft/result'
+import type { URIComponents } from 'uri-js'
+import { failure, ok } from '@talesoft/result'
+import {
+  parse as parseUri,
+  serialize as serializeUri,
+  resolve as resolveUri,
+  SCHEMES,
+} from 'uri-js'
 
-export type AlphabeticalLetter = UppercaseAlphabeticalLetter | LowercaseAlphabeticalLetter
+export type Uri = string
 
-export type Digit = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9
+export interface UriComponents {
+  scheme?: string
+  userInfo?: string
+  host?: string
+  port?: number
+  path?: string
+  query?: string
+  fragment?: string
+}
 
-export type ReservedCharacter = GenericDelimiter | SubDelimiter
-export type UnreservedCharacter = AlphabeticalLetter | Digit | '-' | '.' | '_' | '~'
+const id = (value: URIComponents) => value
+const schemeHandler = (scheme: string) => ({ scheme, parse: id, serialize: id })
+const overwrittenSchemes = ['mailto', 'urn', 'ws', 'wss']
+const schemeHandlers = Object.fromEntries(
+  overwrittenSchemes.map(scheme => [scheme, schemeHandler(scheme)]),
+)
+const originalSchemeHandlers = Object.fromEntries(
+  overwrittenSchemes.map(scheme => [scheme, SCHEMES[scheme]]),
+)
 
-// Can't represent this in TypeScript
-// export type Scheme = AlphabeticalLetter * ( AlphabeticalLetter | Digit | "+" | "-" | "." )
-export type Scheme = string
+export function parse(uri: Uri): Result<UriComponents, Error> {
+  try {
+    // We overwrite some scheme parsing behavior in url-js (we don't want it, actually. Let this function be as predicatable as possible.)
+    Object.assign(SCHEMES, schemeHandlers)
+    const { scheme, userinfo, host, port, path, query, fragment, error } = parseUri(uri)
+    // Assign the old behavior to url-js to not interfer with other instances using url-js directly
+    Object.assign(SCHEMES, originalSchemeHandlers)
 
-export type UserInfo<User extends string, Password extends string> = `${User extends ''
-  ? ''
-  : User}${Password extends '' ? '' : `:${Password}`}`
+    if (error) {
+      return failure(new Error(error))
+    }
 
-export type Authority<
-  UserInfoType extends UserInfo<string, string>,
-  Host extends string,
-  Port extends number,
-> = `${UserInfoType extends '' ? '' : `${UserInfoType}@`}${Host}${Port extends 0 ? '' : `:${Port}`}`
+    return ok({
+      ...(scheme ? { scheme } : undefined),
+      ...(userinfo ? { userInfo: userinfo } : undefined),
+      ...(host ? { host } : undefined),
+      ...(port ? { port: parseInt(port.toString()) } : undefined),
+      ...(path ? { path: path } : undefined),
+      ...(query ? { query: query } : undefined),
+      ...(fragment ? { fragment: fragment } : undefined),
+    })
+  } catch (error) {
+    return failure(error)
+  }
+}
 
-export type EmptyPath = ''
-export type EmptyOrPrefixedPath = EmptyPath | `/${string}`
-export type AbsolutePath = `/${string}`
-export type RootlessPath = `${string}/${string}`
+export function stringify(uriComponents: UriComponents): string {
+  Object.assign(SCHEMES, schemeHandlers)
+  const uriString = serializeUri({
+    scheme: uriComponents.scheme,
+    userinfo: uriComponents.userInfo,
+    host: uriComponents.host,
+    port: uriComponents.port,
+    path: uriComponents.path,
+    query: uriComponents.query,
+    fragment: uriComponents.fragment,
+  })
+  Object.assign(SCHEMES, originalSchemeHandlers)
+  return uriString
+}
 
-export type HierPart<
-  AuthorityType extends Authority<UserInfo<string, string>, string, 0>,
-  PathType extends EmptyOrPrefixedPath = '',
-> = `${AuthorityType extends '' ? '' : `//${AuthorityType}`}${PathType}`
-
-export type Uri<
-  SchemeType extends Scheme,
-  HierPartType extends HierPart<Authority<UserInfo<string, string>, string, 0>, string>,
-  Query extends string,
-  Fragment extends string,
-> = `${SchemeType extends '' ? '' : `${SchemeType}:`}${HierPartType}${Query extends ''
-  ? ''
-  : `?${Query}`}${Fragment extends '' ? '' : `#${Fragment}`}`
-
-const uri: Uri<'https', 'user@localhost/test', '', 'test'>
-
-// URI         = scheme ":" hier-part [ "?" query ] [ "#" fragment ]
-
-//       hier-part   = "//" authority path-abempty
-//                   / path-absolute
-//                   / path-rootless
-//                   / path-empty
+export function resolve(uri: Uri, relativeUri: Uri): Uri {
+  return resolveUri(uri, relativeUri)
+}
