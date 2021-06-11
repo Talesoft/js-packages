@@ -221,7 +221,7 @@ export function schema<Id extends string, SchemaType extends SchemaObject>(
 
 export type ValueCreationType = 'default' | 'example'
 
-export interface ValueCreationExamples {
+export type ValueCreationExamples = {
   readonly text: string
   readonly longText: string
   readonly formats: Record<string, string>

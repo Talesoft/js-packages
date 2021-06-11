@@ -10,6 +10,13 @@ module.exports = {
     sourceType: 'module',
   },
   rules: {
+    'prefer-arrow-callback': [
+      'error',
+      {
+        allowNamedFunctions: false,
+        allowUnboundThis: false,
+      },
+    ],
     'prettier/prettier': [
       'error',
       {
@@ -21,6 +28,8 @@ module.exports = {
         arrowParens: 'avoid',
       },
     ],
+    '@typescript-eslint/consistent-type-imports': ['error', { prefer: 'type-imports' }],
+    '@typescript-eslint/consistent-type-definitions': ['error', 'type'],
   },
   env: {
     node: true,

@@ -1,15 +1,9 @@
-import { ContextTransformer, enterKeyword, validateValue, Validator } from '../validation'
+import type { ContextTransformer, Validator } from '../validation'
+import { enterKeyword } from '../validation'
 import { invalidOutput } from '../validation'
-import {
-  isAnchor,
-  isBoolean,
-  isDynamicAnchor,
-  isRecursiveAnchor,
-  isRef,
-  isSchema,
-  isString,
-} from '../common'
-import { resolvePath } from '../paths'
+import { isAnchor, isDynamicAnchor, isRecursiveAnchor, isRef } from '../common'
+import { isBoolean, isString } from '@talesoft/types'
+import { none, some } from '@talesoft/option'
 
 export const coreContextTransformers: Record<string, ContextTransformer> = {
   $id: (schema, context) => {
@@ -57,17 +51,17 @@ export const coreContextTransformers: Record<string, ContextTransformer> = {
 export const coreValidators: Record<string, Validator> = {
   // Boolean schema validation (simply, true and false are valid schemas)
   // a "true" schema does not produce any output (It's the same as {}, so no validators kick in and it always stays valid)
-  $: (schema, _, context) => {
+  $: async (schema, _, context) => {
     if (schema === false) {
-      return invalidOutput([], context.error`Must not be any value`, context)
+      return some(invalidOutput([], context.error`Must not be any value`, context))
     }
 
-    return undefined
+    return none
   },
 
-  $ref: (schema, value, context) => {
+  $ref: async (schema, _value, context) => {
     if (!isRef(schema)) {
-      return undefined
+      return none
     }
 
     const localContext = enterKeyword('$ref', context)
@@ -75,28 +69,32 @@ export const coreValidators: Record<string, Validator> = {
       ? context.currentSchemaId
       : Object.keys(context.loadedSchemas).find(id => schema.$ref.startsWith(id))
     if (!referencedSchemaId || !context.loadedSchemas[referencedSchemaId]) {
-      return invalidOutput(
-        [],
-        localContext.error`Referenced schema of ref ${schema.$ref} was not found`,
-        localContext,
+      // TODO: Try network resolve
+      return some(
+        invalidOutput(
+          [],
+          localContext.error`Referenced schema of ref ${schema.$ref} was not found`,
+          localContext,
+        ),
       )
     }
 
     const path = schema.$ref.substr(
       referencedSchemaId.startsWith('#') ? 1 : referencedSchemaId.length,
     )
-    const { path: resolvedPath, value: resolvedSchema } = resolvePath(
-      path,
-      context.loadedSchemas[referencedSchemaId],
-    )
+    // const { path: resolvedPath, value: resolvedSchema } = resolveJsonPointer(
+    //   path,
+    //   context.loadedSchemas[referencedSchemaId],
+    // )
 
-    if (!isSchema(resolvedSchema)) {
-      return invalidOutput(
-        [],
-        localContext.error`Failed to resolved schema path ${resolvedPath} in schema ${referencedSchemaId}`,
-        localContext,
-      )
-    }
-    return validateValue(resolvedSchema, value, localContext)
+    // if (!isSchema(resolvedSchema)) {
+    //   return invalidOutput(
+    //     [],
+    //     localContext.error`Failed to resolved schema path ${resolvedPath} in schema ${referencedSchemaId}`,
+    //     localContext,
+    //   )
+    // }
+    // return validateValue(resolvedSchema, value, localContext)
+    return none
   },
 }

@@ -21,7 +21,7 @@ export type DependentRequirements<Value = unknown> = Record<
   ReadonlyArray<RequiredKeys<Value>>
 >
 
-export interface ValidationProperties<Value = unknown> {
+export type ValidationProperties<Value = unknown> = {
   readonly type?: SimpleType | ReadonlyArray<SimpleType>
   readonly const?: Value
   readonly enum?: ReadonlyArray<Value>

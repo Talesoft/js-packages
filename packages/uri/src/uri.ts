@@ -1,23 +1,26 @@
 import type { Result } from '@talesoft/result'
+import type { Option } from '@talesoft/option'
 import type { URIComponents } from 'uri-js'
-import { failure, ok } from '@talesoft/result'
+import { fromFallible } from '@talesoft/result'
+import { fromFalsible } from '@talesoft/option'
 import {
   parse as parseUri,
   serialize as serializeUri,
   resolve as resolveUri,
   SCHEMES,
 } from 'uri-js'
+import { toInteger } from '@talesoft/types'
 
 export type Uri = string
 
-export interface UriComponents {
-  scheme?: string
-  userInfo?: string
-  host?: string
-  port?: number
-  path?: string
-  query?: string
-  fragment?: string
+export type UriComponents = {
+  scheme: Option<string>
+  userInfo: Option<string>
+  host: Option<string>
+  port: Option<number>
+  path: Option<string>
+  query: Option<string>
+  fragment: Option<string>
 }
 
 const id = (value: URIComponents) => value
@@ -31,7 +34,7 @@ const originalSchemeHandlers = Object.fromEntries(
 )
 
 export function parse(uri: Uri): Result<UriComponents, Error> {
-  try {
+  return fromFallible(() => {
     // We overwrite some scheme parsing behavior in url-js (we don't want it, actually. Let this function be as predicatable as possible.)
     Object.assign(SCHEMES, schemeHandlers)
     const { scheme, userinfo, host, port, path, query, fragment, error } = parseUri(uri)
@@ -39,38 +42,39 @@ export function parse(uri: Uri): Result<UriComponents, Error> {
     Object.assign(SCHEMES, originalSchemeHandlers)
 
     if (error) {
-      return failure(new Error(error))
+      throw new Error(error)
     }
 
-    return ok({
-      ...(scheme ? { scheme } : undefined),
-      ...(userinfo ? { userInfo: userinfo } : undefined),
-      ...(host ? { host } : undefined),
-      ...(port ? { port: parseInt(port.toString()) } : undefined),
-      ...(path ? { path: path } : undefined),
-      ...(query ? { query: query } : undefined),
-      ...(fragment ? { fragment: fragment } : undefined),
-    })
-  } catch (error) {
-    return failure(error)
-  }
+    return {
+      scheme: fromFalsible(scheme),
+      userInfo: fromFalsible(userinfo),
+      host: fromFalsible(host),
+      port: fromFalsible(port).map(toInteger),
+      path: fromFalsible(path),
+      query: fromFalsible(query),
+      fragment: fromFalsible(fragment),
+    }
+  })
 }
 
 export function stringify(uriComponents: UriComponents): string {
   Object.assign(SCHEMES, schemeHandlers)
-  const uriString = serializeUri({
-    scheme: uriComponents.scheme,
-    userinfo: uriComponents.userInfo,
-    host: uriComponents.host,
-    port: uriComponents.port,
-    path: uriComponents.path,
-    query: uriComponents.query,
-    fragment: uriComponents.fragment,
+  const uri = serializeUri({
+    scheme: uriComponents.scheme.orUndefined,
+    userinfo: uriComponents.userInfo.orUndefined,
+    host: uriComponents.host.orUndefined,
+    port: uriComponents.port.orUndefined,
+    path: uriComponents.path.orUndefined,
+    query: uriComponents.query.orUndefined,
+    fragment: uriComponents.fragment.orUndefined,
   })
   Object.assign(SCHEMES, originalSchemeHandlers)
-  return uriString
+  return uri
 }
 
 export function resolve(uri: Uri, relativeUri: Uri): Uri {
-  return resolveUri(uri, relativeUri)
+  Object.assign(SCHEMES, schemeHandlers)
+  const result = resolveUri(uri, relativeUri)
+  Object.assign(SCHEMES, originalSchemeHandlers)
+  return result
 }

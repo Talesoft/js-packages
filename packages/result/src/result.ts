@@ -1,70 +1,78 @@
-export interface Result<Value, Error> {
+import type { Option } from '@talesoft/option'
+import { some, none } from '@talesoft/option'
+
+export const vocabulary = 'https://schema.tale.codes/result.json#' as const
+export type Vocabulary = typeof vocabulary
+
+type ResultMethods<Value, Error> = {
+  readonly '@vocab': Vocabulary
   readonly map: <MappedValue>(
     transform: (value: Value) => MappedValue,
   ) => Result<MappedValue, Error>
   readonly mapError: <MappedError>(
     transform: (error: Error) => MappedError,
   ) => Result<Value, MappedError>
-
-  readonly then: <MappedValue>(
-    transform: (value: Value) => Result<MappedValue, Error>,
-  ) => Result<MappedValue, Error>
-  readonly catch: <MappedError>(
-    transform: (error: Error) => Result<Value, MappedError>,
-  ) => Result<Value, MappedError>
-
-  readonly orThrow: () => Value
+  readonly orThrow: Value
+  readonly asOption: Option<Value>
+  readonly asErrorOption: Option<Error>
+  readonly asArray: [Value] | []
+  readonly asErrorArray: [Error] | []
 }
 
-export interface Ok<Value, Error> extends Result<Value, Error> {
+type Ok<Value> = {
+  readonly '@type': 'ok'
   readonly value: Value
 }
 
-export interface Failure<Value, Error> extends Result<Value, Error> {
+type Failure<Error> = {
+  readonly '@type': 'error'
   readonly error: Error
 }
 
-function withMethods<Value>(value: Partial<Value>, methods: Partial<Value>): Value {
-  Object.entries(methods).forEach(([name, method]) =>
-    Object.defineProperty(value, name, {
-      enumerable: false,
-      configurable: false,
-      writable: false,
-      value: method,
-    }),
-  )
-  return value as Value
-}
+export type Result<Value, Error> = (Ok<Value> | Failure<Error>) & ResultMethods<Value, Error>
 
-export function ok<Value, Error>(value: Value): Ok<Value, Error> {
-  return withMethods<Ok<Value, Error>>(
-    { value },
+export function ok<Value, Error>(value: Value): Result<Value, Error> {
+  return Object.defineProperties(
+    { '@vocab': vocabulary, '@type': 'ok', value },
     {
-      map: transform => ok(transform(value)),
-      mapError: () => ok(value),
-
-      then: transform => transform(value),
-      catch: () => ok(value),
-
-      orThrow: () => value,
-    },
-  )
-}
-
-export function failure<Value, Error>(error: Error): Failure<Value, Error> {
-  return withMethods<Failure<Value, Error>>(
-    { error },
-    {
-      map: () => failure(error),
-      mapError: transform => failure(transform(error)),
-
-      then: () => failure(error),
-      catch: transform => transform(error),
-
-      orThrow: () => {
-        'hide source'
-        throw error
+      map: {
+        value: <MappedValue>(transform: (value: Value) => MappedValue) => ok(transform(value)),
       },
+      mapError: { value: () => ok(value) },
+      orThrow: { value },
+      asOption: { get: () => some(value) },
+      asErrorOption: { value: none },
+      asArray: { get: () => [value] },
+      asErrorArray: { get: () => [] },
     },
   )
+}
+
+export function failure<Value, Error>(error: Error): Result<Value, Error> {
+  return Object.defineProperties(
+    { '@vocab': vocabulary, '@type': 'failure', error },
+    {
+      map: { value: () => failure(error) },
+      mapError: {
+        value: <MappedError>(transform: (error: Error) => MappedError) => failure(transform(error)),
+      },
+      orThrow: {
+        get: () => {
+          throw error
+        },
+      },
+      asOption: { value: none },
+      asErrorOption: { get: () => some(error) },
+      asArray: { get: () => [] },
+      asErrorArray: { get: () => [error] },
+    },
+  )
+}
+
+export function fromFallible<Value, Error>(fallible: () => Value): Result<Value, Error> {
+  try {
+    return ok(fallible())
+  } catch (error) {
+    return failure(error)
+  }
 }

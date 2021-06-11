@@ -3,7 +3,7 @@ import type { Schema } from './schema'
 
 export type Vocabulary = Record<string, boolean>
 
-export interface CoreProperties {
+export type CoreProperties = {
   readonly $id?: string
   readonly $schema?: UriString
   readonly $ref?: UriReferenceString

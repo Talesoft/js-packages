@@ -10,21 +10,23 @@ import type {
   VerboseOutput,
 } from './standard/output/schema'
 import type { FormatValidators } from './validators/formatAnnotation'
+import type { Option } from '@talesoft/option'
 import { applicatorValidators } from './validators/applicator'
 import { validationValidators } from './validators/validation'
-import { isArray, isBoolean, isObject, isSchema, isString } from './common'
+import { isSchema } from './common'
 import { standardFormatValidators, formatAnnotationValidators } from './validators/formatAnnotation'
 import { coreContextTransformers, coreValidators } from './validators/core'
+import { isBoolean, isObject, isArray, isString } from '@talesoft/types'
 
 export type Validator = (
   schema: Schema,
   value: unknown,
   context: ValidationContext,
-) => VerboseOutput | undefined
+) => Promise<Option<VerboseOutput>>
 
 export type ContextTransformer = (schema: Schema, context: ValidationContext) => ValidationContext
 
-export interface ValidationContext {
+export type ValidationContext = {
   readonly loadedSchemas: Record<string, Schema>
   readonly anchors: Record<string, Schema>
   readonly dynamicAnchors: Record<string, Schema>
@@ -196,18 +198,21 @@ export function validateValue<SchemaType extends Schema, Value>(
   schema: SchemaType,
   value: Value,
   context: ValidationContext,
-): VerboseOutput {
+): Promise<VerboseOutput> {
   // Transform context (e.g. core operations register schemas and anchors)
   const transformedContext = Object.values(context.contextTransformers).reduce(
     (resultContext, register) => register(schema, resultContext),
     context,
   )
+  const validations = Object.values(context.validators).map(getValidatorOutput =>
+    Promise.resolve(getValidatorOutput(schema, value, transformedContext)),
+  )
   // Validate
-  const results = Object.values(context.validators)
-    .map(getValidatorOutput => getValidatorOutput(schema, value, transformedContext))
-    .filter(Boolean) as VerboseOutput[]
-  // Generate combined output
-  return combineOutputs(results, transformedContext.error`Validation failed`, transformedContext)
+  return Promise.all(validations)
+    .then(results => results.flatMap(result => result.asArray))
+    .then(results =>
+      combineOutputs(results, transformedContext.error`Validation failed`, transformedContext),
+    )
 }
 
 export const standardValidators = {
@@ -222,31 +227,31 @@ export function validate<SchemaType extends Schema>(
   schema: SchemaType,
   value: unknown,
   options?: ValidationOptions,
-): FlagOutput
+): Promise<FlagOutput>
 export function validate<SchemaType extends Schema>(
   outputType: 'basic',
   schema: SchemaType,
   value: unknown,
   options?: ValidationOptions,
-): BasicOutput
+): Promise<BasicOutput>
 export function validate<SchemaType extends Schema>(
   outputType: 'detailed',
   schema: SchemaType,
   value: unknown,
   options?: ValidationOptions,
-): DetailedOutput
+): Promise<DetailedOutput>
 export function validate<SchemaType extends Schema>(
   outputType: 'verbose',
   schema: SchemaType,
   value: unknown,
   options?: ValidationOptions,
-): VerboseOutput
+): Promise<VerboseOutput>
 export function validate<SchemaType extends Schema>(
   outputType: OutputType,
   schema: SchemaType,
   value: unknown,
   options?: ValidationOptions,
-): Output {
+): Promise<Output> {
   const id = isObject(schema) && isString(schema.$id) ? schema.$id : '#'
   const context = {
     loadedSchemas: { [id]: schema, ...options?.loadedSchemas },
@@ -266,15 +271,14 @@ export function validate<SchemaType extends Schema>(
     formatValidators: standardFormatValidators,
     error: options?.error ?? jsonError,
   }
-  const result = validateValue(schema, value, context)
-  return transformOutput(outputType, result)
+  return validateValue(schema, value, context).then(result => transformOutput(outputType, result))
 }
 
 export function validateFlag<SchemaType extends Schema>(
   schema: SchemaType,
   value: unknown,
   options?: ValidationOptions,
-): FlagOutput {
+): Promise<FlagOutput> {
   return validate('flag', schema, value, options)
 }
 
@@ -282,7 +286,7 @@ export function validateBasic<SchemaType extends Schema>(
   schema: SchemaType,
   value: unknown,
   options?: ValidationOptions,
-): BasicOutput {
+): Promise<BasicOutput> {
   return validate('basic', schema, value, options)
 }
 
@@ -290,7 +294,7 @@ export function validateDetailed<SchemaType extends Schema>(
   schema: SchemaType,
   value: unknown,
   options?: ValidationOptions,
-): DetailedOutput {
+): Promise<DetailedOutput> {
   return validate('detailed', schema, value, options)
 }
 
@@ -298,6 +302,6 @@ export function validateVerbose<SchemaType extends Schema>(
   schema: SchemaType,
   value: unknown,
   options?: ValidationOptions,
-): VerboseOutput {
+): Promise<VerboseOutput> {
   return validate('verbose', schema, value, options)
 }

@@ -1,66 +1,62 @@
-export interface Option<Value> {
+export const vocabulary = 'https://schema.tale.codes/option.json#' as const
+export type Vocabulary = typeof vocabulary
+
+type OptionMethods<Value> = {
+  readonly '@vocab': Vocabulary
   readonly map: <MappedValue>(transform: (value: Value) => MappedValue) => Option<MappedValue>
-  readonly mapError: <MappedError>(transform: (error: Error) => MappedError) => Option<Value>
-
-  readonly then: <MappedValue>(
-    transform: (value: Value) => Option<MappedValue>,
-  ) => Option<MappedValue>
-  readonly catch: <MappedError>(
-    transform: (error: Error) => Option<Value>,
-  ) => Option<Value>
-
-  readonly orThrow: () => Value
+  readonly orUndefined: Value | undefined
+  readonly orNull: Value | null
+  readonly asArray: [Value] | []
 }
 
-export interface Ok<Value, Error> extends Result<Value, Error> {
+type Some<Value> = {
+  readonly '@type': 'some'
   readonly value: Value
-}
+} & OptionMethods<Value>
 
-export interface Failure<Value, Error> extends Result<Value, Error> {
-  readonly error: Error
-}
+type None = {
+  readonly '@type': 'none'
+} & OptionMethods<never>
 
-function withMethods<Value>(value: Partial<Value>, methods: Partial<Value>): Value {
-  Object.entries(methods).forEach(([name, method]) =>
-    Object.defineProperty(value, name, {
-      enumerable: false,
-      configurable: false,
-      writable: false,
-      value: method,
-    }),
-  )
-  return value as Value
-}
+export type Option<Value> = Some<Value> | None
 
-export function ok<Value, Error>(value: Value): Ok<Value, Error> {
-  return withMethods<Ok<Value, Error>>(
-    { value },
+export function some<Value>(value: Value): Some<Value> {
+  return Object.defineProperties(
+    { '@vocab': vocabulary, '@type': 'some', value },
     {
-      map: transform => ok(transform(value)),
-      mapError: () => ok(value),
-
-      then: transform => transform(value),
-      catch: () => ok(value),
-
-      orThrow: () => value,
-    },
-  )
-}
-
-export function failure<Value, Error>(error: Error): Failure<Value, Error> {
-  return withMethods<Failure<Value, Error>>(
-    { error },
-    {
-      map: () => failure(error),
-      mapError: transform => failure(transform(error)),
-
-      then: () => failure(error),
-      catch: transform => transform(error),
-
-      orThrow: () => {
-        'hide source'
-        throw error
+      map: {
+        value: <MappedValue>(transform: (value: Value) => MappedValue) => some(transform(value)),
       },
+      orUndefined: { value },
+      orNull: { value },
+      asArray: { get: () => [value] },
     },
   )
+}
+
+export const none: None = Object.defineProperties(
+  { '@vocab': vocabulary, '@type': 'none' },
+  {
+    map: { value: () => none },
+    orUndefined: { value: undefined },
+    orNull: { value: null },
+    asArray: { value: [] },
+  },
+)
+
+export function fromPredicate<Value>(
+  predicate: (value: Value) => boolean,
+  value: Value,
+): Option<Value> {
+  return predicate(value) ? some(value) : none
+}
+
+export function fromNullable<Value>(value: Value | undefined | null): Option<Value> {
+  return fromPredicate(value => value !== null && value !== undefined, value as Value)
+}
+
+export function fromFalsible<Value>(
+  value: Value | undefined | null | false | 0 | '',
+): Option<Value> {
+  return fromPredicate(Boolean, value as Value)
 }

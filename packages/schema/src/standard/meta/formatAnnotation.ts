@@ -1,4 +1,4 @@
-export interface FormatAnnotationProperties {
+export type FormatAnnotationProperties = {
   readonly format?: string
 }
 

@@ -3,13 +3,11 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-Object.defineProperty(exports, "default", {
+Object.defineProperty(exports, "resolve", {
   enumerable: true,
   get: function () {
-    return _tryCatch.default;
+    return _jsonPointer.resolve;
   }
 });
 
-var _tryCatch = _interopRequireDefault(require("./tryCatch"));
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+var _jsonPointer = require("./jsonPointer");

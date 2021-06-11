@@ -4,18 +4,18 @@ export const outputTypes = ['flag', 'basic', 'detailed', 'verbose'] as const
 
 export type OutputType = typeof outputTypes[number]
 
-export interface FlagOutput {
+export type FlagOutput = {
   readonly valid: boolean
 }
 
-export interface OutputUnit extends FlagOutput {
+export type OutputUnit = {
   readonly keywordLocation: JsonPointerString
   readonly absoluteKeywordLocation?: JsonPointerString
   readonly instanceLocation: JsonPointerString
   readonly error?: string
   readonly errors?: ReadonlyArray<OutputUnit>
   readonly annotations?: ReadonlyArray<OutputUnit>
-}
+} & FlagOutput
 
 export type BasicOutput = OutputUnit
 export type DetailedOutput = OutputUnit

@@ -3,17 +3,41 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-Object.defineProperty(exports, "failure", {
+Object.defineProperty(exports, "vocabulary", {
   enumerable: true,
   get: function () {
-    return _result.failure;
+    return _option.vocabulary;
   }
 });
-Object.defineProperty(exports, "ok", {
+Object.defineProperty(exports, "some", {
   enumerable: true,
   get: function () {
-    return _result.ok;
+    return _option.some;
+  }
+});
+Object.defineProperty(exports, "none", {
+  enumerable: true,
+  get: function () {
+    return _option.none;
+  }
+});
+Object.defineProperty(exports, "fromPredicate", {
+  enumerable: true,
+  get: function () {
+    return _option.fromPredicate;
+  }
+});
+Object.defineProperty(exports, "fromNullable", {
+  enumerable: true,
+  get: function () {
+    return _option.fromNullable;
+  }
+});
+Object.defineProperty(exports, "fromFalsible", {
+  enumerable: true,
+  get: function () {
+    return _option.fromFalsible;
   }
 });
 
-var _result = require("./result");
+var _option = require("./option");

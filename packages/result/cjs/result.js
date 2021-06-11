@@ -5,41 +5,80 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.ok = ok;
 exports.failure = failure;
+exports.fromFallible = fromFallible;
+exports.vocabulary = void 0;
 
-function withMethods(value, methods) {
-  Object.entries(methods).forEach(([name, method]) => Object.defineProperty(value, name, {
-    enumerable: false,
-    configurable: false,
-    writable: false,
-    value: method
-  }));
-  return value;
-}
+var _option = require("@talesoft/option");
+
+const vocabulary = 'https://schema.tale.codes/result.json#';
+exports.vocabulary = vocabulary;
 
 function ok(value) {
-  return withMethods({
+  return Object.defineProperties({
+    '@vocab': vocabulary,
+    '@type': 'ok',
     value
   }, {
-    map: transform => ok(transform(value)),
-    mapError: () => ok(value),
-    then: transform => transform(value),
-    catch: () => ok(value),
-    orThrow: () => value
+    map: {
+      value: transform => ok(transform(value))
+    },
+    mapError: {
+      value: () => ok(value)
+    },
+    orThrow: {
+      value
+    },
+    asOption: {
+      get: () => (0, _option.some)(value)
+    },
+    asErrorOption: {
+      value: _option.none
+    },
+    asArray: {
+      get: () => [value]
+    },
+    asErrorArray: {
+      get: () => []
+    }
   });
 }
 
 function failure(error) {
-  return withMethods({
+  return Object.defineProperties({
+    '@vocab': vocabulary,
+    '@type': 'failure',
     error
   }, {
-    map: () => failure(error),
-    mapError: transform => failure(transform(error)),
-    then: () => failure(error),
-    catch: transform => transform(error),
-    orThrow: () => {
-      'hide source';
-
-      throw error;
+    map: {
+      value: () => failure(error)
+    },
+    mapError: {
+      value: transform => failure(transform(error))
+    },
+    orThrow: {
+      get: () => {
+        throw error;
+      }
+    },
+    asOption: {
+      value: _option.none
+    },
+    asErrorOption: {
+      get: () => (0, _option.some)(error)
+    },
+    asArray: {
+      get: () => []
+    },
+    asErrorArray: {
+      get: () => [error]
     }
   });
+}
+
+function fromFallible(fallible) {
+  try {
+    return ok(fallible());
+  } catch (error) {
+    return failure(error);
+  }
 }

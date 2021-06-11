@@ -1,24 +1,25 @@
 import type { SimpleType } from '../standard/meta/validation'
+import type { Validator } from '../validation'
 import {
   enterKeyword,
-  Validator,
   validOutput,
   invalidOutput,
   enterInstance,
   combineOutputs,
   validateFlag,
 } from '../validation'
+import { isSchema } from '../common'
 import {
-  equals,
-  isArray,
-  isBoolean,
-  isInteger,
   isNull,
+  isBoolean,
   isNumber,
-  isObject,
-  isSchema,
   isString,
-} from '../common'
+  isArray,
+  isObject,
+  isInteger,
+} from '@talesoft/types'
+import equals from '@talesoft/equals'
+import { none, some } from '@talesoft/option'
 
 function getValueSimpleType(value: unknown): SimpleType {
   if (isNull(value)) {
@@ -44,7 +45,7 @@ export const validationValidators: Record<string, Validator> = {
   type: (schema, value, context) => {
     // Only acts on string or array values
     if (isBoolean(schema) || !(isString(schema.type) || isArray(schema.type))) {
-      return undefined
+      return Promise.resolve(none)
     }
 
     const localContext = enterKeyword('type', context)
@@ -68,208 +69,266 @@ export const validationValidators: Record<string, Validator> = {
       }
     })
 
-    return isAllowedType
-      ? validOutput([], localContext)
-      : invalidOutput(
-          [],
-          localContext.error`Type must be one of ${allowedTypes}, got ${getValueSimpleType(value)}`,
-          localContext,
-        )
+    return Promise.resolve(
+      some(
+        isAllowedType
+          ? validOutput([], localContext)
+          : invalidOutput(
+              [],
+              localContext.error`Type must be one of ${allowedTypes}, got ${getValueSimpleType(
+                value,
+              )}`,
+              localContext,
+            ),
+      ),
+    )
   },
 
   // const
   const: (schema, value, context) => {
     if (isBoolean(schema) || schema.const === undefined) {
-      return undefined
+      return Promise.resolve(none)
     }
 
     const localContext = enterKeyword('const', context)
-    return equals(schema.const, value)
-      ? validOutput([], localContext)
-      : invalidOutput([], localContext.error`Must be equal to ${schema.const}`, localContext)
+    return Promise.resolve(
+      some(
+        equals(schema.const, value)
+          ? validOutput([], localContext)
+          : invalidOutput([], localContext.error`Must be equal to ${schema.const}`, localContext),
+      ),
+    )
   },
 
   // enum
   enum: (schema, value, context) => {
     if (isBoolean(schema) || !isArray(schema.enum)) {
-      return undefined
+      return Promise.resolve(none)
     }
 
     const localContext = enterKeyword('enum', context)
-    return schema.enum.some(enumValue => equals(enumValue, value))
-      ? validOutput([], localContext)
-      : invalidOutput([], localContext.error`Must be equal to one of ${schema.enum}`, localContext)
+    return Promise.resolve(
+      some(
+        schema.enum.some(enumValue => equals(enumValue, value))
+          ? validOutput([], localContext)
+          : invalidOutput(
+              [],
+              localContext.error`Must be equal to one of ${schema.enum}`,
+              localContext,
+            ),
+      ),
+    )
   },
 
   // multipleOf
   multipleOf: (schema, value, context) => {
     if (isBoolean(schema) || !isNumber(schema.multipleOf) || !isNumber(value)) {
-      return undefined
+      return Promise.resolve(none)
     }
 
     // TODO: Division by zero check?
     const localContext = enterKeyword('multipleOf', context)
-    return isInteger(value / schema.multipleOf)
-      ? validOutput([], localContext)
-      : invalidOutput(
-          [],
-          localContext.error`Must be a multiple of ${schema.multipleOf}`,
-          localContext,
-        )
+    return Promise.resolve(
+      some(
+        isInteger(value / schema.multipleOf)
+          ? validOutput([], localContext)
+          : invalidOutput(
+              [],
+              localContext.error`Must be a multiple of ${schema.multipleOf}`,
+              localContext,
+            ),
+      ),
+    )
   },
 
   // maximum
   maximum: (schema, value, context) => {
     if (isBoolean(schema) || !isNumber(schema.maximum) || !isNumber(value)) {
-      return undefined
+      return Promise.resolve(none)
     }
 
     const localContext = enterKeyword('maximum', context)
-    return value > schema.maximum
-      ? invalidOutput(
-          [],
-          localContext.error`Must be lower than or equal to ${schema.maximum}`,
-          localContext,
-        )
-      : validOutput([], localContext)
+    return Promise.resolve(
+      some(
+        value > schema.maximum
+          ? invalidOutput(
+              [],
+              localContext.error`Must be lower than or equal to ${schema.maximum}`,
+              localContext,
+            )
+          : validOutput([], localContext),
+      ),
+    )
   },
 
   // exclusiveMaximum
   exclusiveMaximum: (schema, value, context) => {
     if (isBoolean(schema) || !isNumber(schema.exclusiveMaximum) || !isNumber(value)) {
-      return undefined
+      return Promise.resolve(none)
     }
 
     const localContext = enterKeyword('exclusiveMaximum', context)
-    return value >= schema.exclusiveMaximum
-      ? invalidOutput(
-          [],
-          localContext.error`Must be lower than ${schema.exclusiveMaximum}`,
-          localContext,
-        )
-      : validOutput([], localContext)
+    return Promise.resolve(
+      some(
+        value >= schema.exclusiveMaximum
+          ? invalidOutput(
+              [],
+              localContext.error`Must be lower than ${schema.exclusiveMaximum}`,
+              localContext,
+            )
+          : validOutput([], localContext),
+      ),
+    )
   },
 
   // minimum
   minimum: (schema, value, context) => {
     if (isBoolean(schema) || !isNumber(schema.minimum) || !isNumber(value)) {
-      return undefined
+      return Promise.resolve(none)
     }
 
     const localContext = enterKeyword('minimum', context)
-    return value < schema.minimum
-      ? invalidOutput(
-          [],
-          localContext.error`Must be higher than or equal to ${schema.minimum}`,
-          localContext,
-        )
-      : validOutput([], localContext)
+    return Promise.resolve(
+      some(
+        value < schema.minimum
+          ? invalidOutput(
+              [],
+              localContext.error`Must be higher than or equal to ${schema.minimum}`,
+              localContext,
+            )
+          : validOutput([], localContext),
+      ),
+    )
   },
 
   // exclusiveMinimum
   exclusiveMinimum: (schema, value, context) => {
     if (isBoolean(schema) || !isNumber(schema.exclusiveMinimum) || !isNumber(value)) {
-      return undefined
+      return Promise.resolve(none)
     }
 
     const localContext = enterKeyword('exclusiveMinimum', context)
-    return value <= schema.exclusiveMinimum
-      ? invalidOutput(
-          [],
-          localContext.error`Must be higher than ${schema.exclusiveMinimum}`,
-          localContext,
-        )
-      : validOutput([], localContext)
+    return Promise.resolve(
+      some(
+        value <= schema.exclusiveMinimum
+          ? invalidOutput(
+              [],
+              localContext.error`Must be higher than ${schema.exclusiveMinimum}`,
+              localContext,
+            )
+          : validOutput([], localContext),
+      ),
+    )
   },
 
   // maxLength
   maxLength: (schema, value, context) => {
     if (isBoolean(schema) || !isInteger(schema.maxLength) || !isString(value)) {
-      return undefined
+      return Promise.resolve(none)
     }
 
     const localContext = enterKeyword('maxLength', context)
-    return value.length > schema.maxLength
-      ? invalidOutput(
-          [],
-          localContext.error`Must have a maximum length of ${schema.maxLength}`,
-          localContext,
-        )
-      : validOutput([], localContext)
+    return Promise.resolve(
+      some(
+        value.length > schema.maxLength
+          ? invalidOutput(
+              [],
+              localContext.error`Must have a maximum length of ${schema.maxLength}`,
+              localContext,
+            )
+          : validOutput([], localContext),
+      ),
+    )
   },
 
   // minLength
   minLength: (schema, value, context) => {
     if (isBoolean(schema) || !isInteger(schema.minLength) || !isString(value)) {
-      return undefined
+      return Promise.resolve(none)
     }
 
     const localContext = enterKeyword('minLength', context)
-    return value.length < schema.minLength
-      ? invalidOutput(
-          [],
-          localContext.error`Must have a minimum length of ${schema.minLength}`,
-          localContext,
-        )
-      : validOutput([], localContext)
+    return Promise.resolve(
+      some(
+        value.length < schema.minLength
+          ? invalidOutput(
+              [],
+              localContext.error`Must have a minimum length of ${schema.minLength}`,
+              localContext,
+            )
+          : validOutput([], localContext),
+      ),
+    )
   },
 
   // pattern
   pattern: (schema, value, context) => {
     if (isBoolean(schema) || !isString(schema.pattern) || !isString(value)) {
-      return undefined
+      return Promise.resolve(none)
     }
 
     const localContext = enterKeyword('pattern', context)
-    return value.match(new RegExp(schema.pattern))
-      ? validOutput([], localContext)
-      : invalidOutput(
-          [],
-          localContext.error`Must match the pattern ${schema.pattern}`,
-          localContext,
-        )
+    return Promise.resolve(
+      some(
+        value.match(new RegExp(schema.pattern))
+          ? validOutput([], localContext)
+          : invalidOutput(
+              [],
+              localContext.error`Must match the pattern ${schema.pattern}`,
+              localContext,
+            ),
+      ),
+    )
   },
 
   // maxItems
   maxItems: (schema, value, context) => {
     if (isBoolean(schema) || !isInteger(schema.maxItems) || !isArray(value)) {
-      return undefined
+      return Promise.resolve(none)
     }
 
     const localContext = enterKeyword('maxItems', context)
-    return value.length > schema.maxItems
-      ? invalidOutput(
-          [],
-          localContext.error`Must have a maximum item count of ${schema.maxItems}`,
-          localContext,
-        )
-      : validOutput([], localContext)
+    return Promise.resolve(
+      some(
+        value.length > schema.maxItems
+          ? invalidOutput(
+              [],
+              localContext.error`Must have a maximum item count of ${schema.maxItems}`,
+              localContext,
+            )
+          : validOutput([], localContext),
+      ),
+    )
   },
 
   // minItems
   minItems: (schema, value, context) => {
     if (isBoolean(schema) || !isInteger(schema.minItems) || !isArray(value)) {
-      return undefined
+      return Promise.resolve(none)
     }
 
     const localContext = enterKeyword('minItems', context)
-    return value.length < schema.minItems
-      ? invalidOutput(
-          [],
-          localContext.error`Must have a minimum item count of ${schema.minItems}`,
-          localContext,
-        )
-      : validOutput([], localContext)
+    return Promise.resolve(
+      some(
+        value.length < schema.minItems
+          ? invalidOutput(
+              [],
+              localContext.error`Must have a minimum item count of ${schema.minItems}`,
+              localContext,
+            )
+          : validOutput([], localContext),
+      ),
+    )
   },
 
   // uniqueItems
   uniqueItems: (schema, value, context) => {
     if (isBoolean(schema) || !isBoolean(schema.uniqueItems) || !isArray(value)) {
-      return undefined
+      return Promise.resolve(none)
     }
 
     const localContext = enterKeyword('uniqueItems', context)
-    const itemOutputs = value.map((itemValue, index) => {
+    const promises = value.map((itemValue, index) => {
       const itemContext = enterInstance(index, localContext)
       const equalIndex = value.findIndex(compareValue => equals(compareValue, itemValue))
       return index === equalIndex
@@ -280,10 +339,15 @@ export const validationValidators: Record<string, Validator> = {
             itemContext,
           )
     })
-    return combineOutputs(
-      itemOutputs,
-      localContext.error`Duplicate item validation failed`,
-      localContext,
+
+    return Promise.all(promises).then(itemOutputs =>
+      some(
+        combineOutputs(
+          itemOutputs,
+          localContext.error`Duplicate item validation failed`,
+          localContext,
+        ),
+      ),
     )
   },
 
@@ -295,25 +359,30 @@ export const validationValidators: Record<string, Validator> = {
       !isSchema(schema.contains) ||
       !isArray(value)
     ) {
-      return undefined
+      return Promise.resolve(none)
     }
 
     const localContext = enterKeyword('maxContains', context)
     const itemSchema = schema.contains
-    const matchingItemCount = value.filter((itemValue, index) => {
+    const maxContains = schema.maxContains
+    const promises = value.map((itemValue, index) => {
       const itemContext = enterInstance(index, localContext)
       // TODO: Also yield verbose validation info for this?
       //       "contains" will already yield it, basically
-      return validateFlag(itemSchema, itemValue, itemContext).valid
-    }).length
+      return validateFlag(itemSchema, itemValue, itemContext).then(({ valid }) => valid)
+    })
 
-    return matchingItemCount > schema.maxContains
-      ? invalidOutput(
-          [],
-          localContext.error`Must have at maximum ${schema.maxContains} items matching "contains"`,
-          localContext,
-        )
-      : validOutput([], localContext)
+    return Promise.all(promises).then(matchingItems =>
+      some(
+        matchingItems.length > maxContains
+          ? invalidOutput(
+              [],
+              localContext.error`Must have at maximum ${schema.maxContains} items matching "contains"`,
+              localContext,
+            )
+          : validOutput([], localContext),
+      ),
+    )
   },
 
   // minContains

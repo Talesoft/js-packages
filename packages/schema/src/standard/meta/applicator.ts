@@ -7,7 +7,7 @@ export type Properties<Value = unknown> = Value extends Record<string, unknown>
   ? { [Key in keyof Value]: Schema<Value[Key]> }
   : Record<string, Schema>
 
-export interface ApplicatorProperties<Value = unknown> {
+export type ApplicatorProperties<Value = unknown> = {
   readonly prefixItems?: ReadonlyArray<Schema<Value>>
   readonly items?: Items<Value>
   readonly contains?: Schema

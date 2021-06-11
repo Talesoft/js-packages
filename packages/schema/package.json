@@ -12,6 +12,12 @@
   },
   "devDependencies": {
     "@talesoft/jest-bridge": "^0.1.1",
+    "@talesoft/types": "^0.1.0",
+    "@talesoft/equals": "^0.1.0",
+    "@talesoft/option": "^0.1.0",
+    "@talesoft/result": "^0.1.0",
+    "@talesoft/uri": "^0.1.0",
+    "@talesoft/json-pointer": "^0.1.0",
     "@types/jest": "^26.0.20",
     "@types/node": "^14.14.25",
     "@typescript-eslint/eslint-plugin": "^4.14.2",

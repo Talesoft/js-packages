@@ -1,4 +1,4 @@
-export interface MetaDataProperties<Value = unknown> {
+export type MetaDataProperties<Value = unknown> = {
   readonly title?: string
   readonly description?: string
   readonly default?: boolean

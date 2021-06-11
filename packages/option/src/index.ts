@@ -1,2 +1,2 @@
-export type { Failure, Ok, Result } from './option'
-export { failure, ok } from './option'
+export type { Vocabulary, Option } from './option'
+export { vocabulary, some, none, fromPredicate, fromNullable, fromFalsible } from './option'

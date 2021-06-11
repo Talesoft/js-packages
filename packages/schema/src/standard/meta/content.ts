@@ -1,6 +1,6 @@
 import type { Schema } from './schema'
 
-export interface ContentProperties {
+export type ContentProperties = {
   readonly contentEncoding?: string
   readonly contentMediaType?: string
   readonly contentSchema?: Schema

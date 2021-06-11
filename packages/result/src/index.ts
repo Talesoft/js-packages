@@ -1,2 +1,2 @@
-export type { Failure, Ok, Result } from './result'
-export { failure, ok } from './result'
+export type { Vocabulary, Result } from './result'
+export { vocabulary, failure, ok, fromFallible } from './result'

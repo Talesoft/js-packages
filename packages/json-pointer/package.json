@@ -1,6 +1,6 @@
 {
     "name": "@talesoft/json-pointer",
-    "version": "0.1.1",
+    "version": "0.1.0",
     "license": "MIT",
     "main": "cjs/index.js",
     "types": "esm/index.d.ts",
@@ -12,6 +12,8 @@
     },
     "devDependencies": {
         "@talesoft/jest-bridge": "^0.1.1",
+        "@talesoft/option": "^0.1.0",
+        "@talesoft/types": "^0.1.0",
         "@types/jest": "^26.0.20",
         "@types/node": "^14.14.25",
         "@typescript-eslint/eslint-plugin": "^4.14.2",

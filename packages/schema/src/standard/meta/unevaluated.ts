@@ -1,6 +1,6 @@
 import type { Schema } from './schema'
 
-export interface UnevaluatedProperties<Value = unknown> {
+export type UnevaluatedProperties<Value = unknown> = {
   readonly unevaluatedItems?: Schema<Value>
   readonly unevaluatedProperties?: Schema<Value>
 }

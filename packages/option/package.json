@@ -1,5 +1,5 @@
 {
-  "name": "@talesoft/ok",
+  "name": "@talesoft/option",
   "version": "0.1.0",
   "license": "MIT",
   "main": "cjs/index.js",
@@ -12,6 +12,7 @@
   },
   "devDependencies": {
     "@talesoft/jest-bridge": "^0.1.1",
+    "@talesoft/result": "^0.1.0",
     "@types/jest": "^26.0.20",
     "@types/node": "^14.14.25",
     "@typescript-eslint/eslint-plugin": "^4.14.2",
