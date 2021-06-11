@@ -15,8 +15,8 @@ type ResultMethods<Value, Error> = {
   readonly orThrow: Value
   readonly asOption: Option<Value>
   readonly asErrorOption: Option<Error>
-  readonly asArray: [Value] | []
-  readonly asErrorArray: [Error] | []
+  readonly asArray: ReadonlyArray<Value>
+  readonly asErrorArray: ReadonlyArray<Error>
 }
 
 type Ok<Value> = {

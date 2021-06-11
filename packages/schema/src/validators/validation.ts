@@ -369,20 +369,21 @@ export const validationValidators: Record<string, Validator> = {
       const itemContext = enterInstance(index, localContext)
       // TODO: Also yield verbose validation info for this?
       //       "contains" will already yield it, basically
-      return validateFlag(itemSchema, itemValue, itemContext).then(({ valid }) => valid)
+      return validateFlag(itemSchema, itemValue, itemContext)
     })
 
-    return Promise.all(promises).then(matchingItems =>
-      some(
-        matchingItems.length > maxContains
+    return Promise.all(promises).then(itemOutputs => {
+      const matchingItemCount = itemOutputs.filter(({ valid }) => valid).length
+      return some(
+        matchingItemCount > maxContains
           ? invalidOutput(
               [],
               localContext.error`Must have at maximum ${schema.maxContains} items matching "contains"`,
               localContext,
             )
           : validOutput([], localContext),
-      ),
-    )
+      )
+    })
   },
 
   // minContains
@@ -393,89 +394,107 @@ export const validationValidators: Record<string, Validator> = {
       !isSchema(schema.contains) ||
       !isArray(value)
     ) {
-      return undefined
+      return Promise.resolve(none)
     }
 
     const localContext = enterKeyword('minContains', context)
     const itemSchema = schema.contains
-    const matchingItemCount = value.filter((itemValue, index) => {
+    const minContains = schema.minContains
+    const promises = value.map((itemValue, index) => {
       const itemContext = enterInstance(index, localContext)
       // TODO: Also yield verbose validation info for this?
       //       "contains" will already yield it, basically
-      return validateFlag(itemSchema, itemValue, itemContext).valid
-    }).length
+      return validateFlag(itemSchema, itemValue, itemContext)
+    })
 
-    return matchingItemCount < schema.minContains
-      ? invalidOutput(
-          [],
-          localContext.error`Must have at least ${schema.minContains} items matching "contains"`,
-          localContext,
-        )
-      : validOutput([], localContext)
+    return Promise.all(promises).then(itemOutputs => {
+      const matchingItemCount = itemOutputs.filter(({ valid }) => valid).length
+      return some(
+        matchingItemCount < minContains
+          ? invalidOutput(
+              [],
+              localContext.error`Must have at least ${schema.minContains} items matching "contains"`,
+              localContext,
+            )
+          : validOutput([], localContext),
+      )
+    })
   },
 
   // maxProperties
   maxProperties: (schema, value, context) => {
     if (isBoolean(schema) || !isInteger(schema.maxProperties) || !isObject(value)) {
-      return undefined
+      return Promise.resolve(none)
     }
 
     const localContext = enterKeyword('maxProperties', context)
     const propertyCount = Object.keys(value).length
 
-    return propertyCount > schema.maxProperties
-      ? invalidOutput(
-          [],
-          localContext.error`Must have at maximum ${schema.maxProperties} properties`,
-          localContext,
-        )
-      : validOutput([], localContext)
+    return Promise.resolve(
+      some(
+        propertyCount > schema.maxProperties
+          ? invalidOutput(
+              [],
+              localContext.error`Must have at maximum ${schema.maxProperties} properties`,
+              localContext,
+            )
+          : validOutput([], localContext),
+      ),
+    )
   },
 
   // minProperties
   minProperties: (schema, value, context) => {
     if (isBoolean(schema) || !isInteger(schema.minProperties) || !isObject(value)) {
-      return undefined
+      return Promise.resolve(none)
     }
 
     const localContext = enterKeyword('minProperties', context)
     const propertyCount = Object.keys(value).length
 
-    return propertyCount < schema.minProperties
-      ? invalidOutput(
-          [],
-          localContext.error`Must have at least ${schema.minProperties} properties`,
-          localContext,
-        )
-      : validOutput([], localContext)
+    return Promise.resolve(
+      some(
+        propertyCount < schema.minProperties
+          ? invalidOutput(
+              [],
+              localContext.error`Must have at least ${schema.minProperties} properties`,
+              localContext,
+            )
+          : validOutput([], localContext),
+      ),
+    )
   },
 
   // required
   required: (schema, value, context) => {
     if (isBoolean(schema) || !isArray(schema.required) || !isObject(value)) {
-      return undefined
+      return Promise.resolve(none)
     }
 
     const localContext = enterKeyword('required', context)
     const missingProperties = schema.required.filter(key => !(key in value))
 
-    return missingProperties.length > 0
-      ? invalidOutput(
-          [],
-          localContext.error`Must contain the properties ${missingProperties}`,
-          localContext,
-        )
-      : validOutput([], localContext)
+    return Promise.resolve(
+      some(
+        missingProperties.length > 0
+          ? invalidOutput(
+              [],
+              localContext.error`Must contain the properties ${missingProperties}`,
+              localContext,
+            )
+          : validOutput([], localContext),
+      ),
+    )
   },
 
   // dependentRequired
   dependentRequired: (schema, value, context) => {
     if (isBoolean(schema) || !isObject(schema.dependentRequired) || !isObject(value)) {
-      return undefined
+      return Promise.resolve(none)
     }
 
     const localContext = enterKeyword('dependentRequired', context)
-    const keyOutputs = Object.entries(schema.dependentRequired).map(([key, required], index) => {
+    const promises = Object.entries(schema.dependentRequired).map(([key, required], index) => {
       const keyContext = enterKeyword(index, localContext)
       if (!(key in value)) {
         return validOutput([], keyContext)
@@ -490,10 +509,10 @@ export const validationValidators: Record<string, Validator> = {
         : validOutput([], keyContext)
     })
 
-    return combineOutputs(
-      keyOutputs,
-      localContext.error`Dependency validation failed`,
-      localContext,
+    return Promise.all(promises).then(keyOutputs =>
+      some(
+        combineOutputs(keyOutputs, localContext.error`Dependency validation failed`, localContext),
+      ),
     )
   },
 }

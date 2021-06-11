@@ -2,7 +2,7 @@ import type { Validator } from '../validation'
 import {
   enterBoth,
   enterKeyword,
-  validateValue,
+  validateWithContext,
   combineOutputs,
   enterInstance,
   validateVerbose,
@@ -24,7 +24,7 @@ export const applicatorValidators: Record<string, Validator> = {
     const localContext = enterKeyword('prefixItems', context)
     const promises = schema.prefixItems.slice(0, value.length).map((itemSchema, index) => {
       const itemContext = enterBoth(index, localContext)
-      return validateValue(itemSchema, value[index], itemContext)
+      return validateWithContext(itemSchema, value[index], itemContext)
     })
 
     return Promise.all(promises).then(itemOutputs => {
@@ -53,7 +53,7 @@ export const applicatorValidators: Record<string, Validator> = {
     const localContext = enterKeyword('items', context)
     const promises = value.map((itemValue, index) => {
       const itemContext = enterInstance(index, localContext)
-      return validateValue(itemSchema, itemValue, itemContext)
+      return validateWithContext(itemSchema, itemValue, itemContext)
     })
 
     return Promise.all(promises).then(itemOutputs => {
@@ -248,14 +248,14 @@ export const applicatorValidators: Record<string, Validator> = {
     }
 
     const ifContext = enterKeyword('if', context)
-    return validateValue(schema.if, value, ifContext).then(ifResult => {
+    return validateWithContext(schema.if, value, ifContext).then(ifResult => {
       if (ifResult.valid) {
         if (!isSchema(schema.then)) {
           return some(validOutput([ifResult], ifContext))
         }
 
         const thenContext = enterKeyword('then', ifContext)
-        return validateValue(schema.then, value, thenContext).then(thenResult =>
+        return validateWithContext(schema.then, value, thenContext).then(thenResult =>
           thenResult.valid
             ? some(validOutput([thenResult], thenContext))
             : some(
@@ -273,7 +273,7 @@ export const applicatorValidators: Record<string, Validator> = {
       }
 
       const elseContext = enterKeyword('else', ifContext)
-      return validateValue(schema.else, value, elseContext).then(elseResult =>
+      return validateWithContext(schema.else, value, elseContext).then(elseResult =>
         elseResult.valid
           ? some(validOutput([elseResult], elseContext))
           : some(
@@ -297,7 +297,7 @@ export const applicatorValidators: Record<string, Validator> = {
     const localContext = enterKeyword('allOf', context)
     const promises = allOf.map((requiredSchema, index) => {
       const schemaContext = enterKeyword(index, localContext)
-      return validateValue(requiredSchema, value, schemaContext)
+      return validateWithContext(requiredSchema, value, schemaContext)
     })
 
     return Promise.all(promises).then(results => {
@@ -326,7 +326,7 @@ export const applicatorValidators: Record<string, Validator> = {
     const localContext = enterKeyword('allOf', context)
     const promises = schema.allOf.map((possibleSchema, index) => {
       const schemaContext = enterKeyword(index, localContext)
-      return validateValue(possibleSchema, value, schemaContext)
+      return validateWithContext(possibleSchema, value, schemaContext)
     })
     return Promise.all(promises).then(results => {
       const validCount = results.map(result => result.valid).length
@@ -354,7 +354,7 @@ export const applicatorValidators: Record<string, Validator> = {
     const localContext = enterKeyword('oneOf', context)
     const promises = schema.allOf.map((possibleSchema, index) => {
       const schemaContext = enterKeyword(index, localContext)
-      return validateValue(possibleSchema, value, schemaContext)
+      return validateWithContext(possibleSchema, value, schemaContext)
     })
     return Promise.all(promises).then(results => {
       const validCount = results.map(result => result.valid).length
@@ -380,7 +380,7 @@ export const applicatorValidators: Record<string, Validator> = {
     }
 
     const localContext = enterKeyword('not', context)
-    return validateValue(schema.not, value, localContext).then(result =>
+    return validateWithContext(schema.not, value, localContext).then(result =>
       !result.valid
         ? some(validOutput([result], localContext))
         : some(

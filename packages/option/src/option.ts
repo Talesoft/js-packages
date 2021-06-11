@@ -6,7 +6,7 @@ type OptionMethods<Value> = {
   readonly map: <MappedValue>(transform: (value: Value) => MappedValue) => Option<MappedValue>
   readonly orUndefined: Value | undefined
   readonly orNull: Value | null
-  readonly asArray: [Value] | []
+  readonly asArray: ReadonlyArray<Value>
 }
 
 type Some<Value> = {

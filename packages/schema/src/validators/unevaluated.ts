@@ -2,7 +2,7 @@ import type { Validator } from '../validation'
 import {
   enterBoth,
   enterKeyword,
-  validateValue,
+  validateWithContext,
   combineOutputs,
   enterInstance,
   validOutput,
@@ -30,7 +30,7 @@ export const unevaluatedApplicators: Record<string, Validator> = {
     const itemSchema = schema.unevaluatedItems
     const promises = value.slice(evaluatedLength).map((itemValue, index) => {
       const itemContext = enterBoth(evaluatedLength + index, localContext)
-      return validateValue(itemSchema, itemValue, itemContext)
+      return validateWithContext(itemSchema, itemValue, itemContext)
     })
 
     return Promise.all(promises).then(itemOutputs => {
@@ -64,7 +64,7 @@ export const unevaluatedApplicators: Record<string, Validator> = {
 
     const promises = unevaluatedProperties.map(key => {
       const itemContext = enterInstance(key, localContext)
-      return validateValue(itemSchema, value[key], itemContext)
+      return validateWithContext(itemSchema, value[key], itemContext)
     })
 
     return Promise.all(promises).then(keyOutputs =>

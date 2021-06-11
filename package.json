@@ -12,6 +12,7 @@
     "build:option": "lerna run build --no-bail --scope=@talesoft/option",
     "build:json-pointer": "lerna run build --no-bail --scope=@talesoft/json-pointer",
     "build:types": "lerna run build --no-bail --scope=@talesoft/types",
+    "build:equals": "lerna run build --no-bail --scope=@talesoft/equals",
     "build:uri": "lerna run build --no-bail --scope=@talesoft/uri",
     "build:schema": "lerna run build --no-bail --scope=@talesoft/schema",
     "build:openapi": "lerna run build --no-bail --scope=@talesoft/openapi",

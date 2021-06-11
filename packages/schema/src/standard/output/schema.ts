@@ -21,4 +21,11 @@ export type BasicOutput = OutputUnit
 export type DetailedOutput = OutputUnit
 export type VerboseOutput = OutputUnit
 
-export type Output = FlagOutput | BasicOutput | DetailedOutput | VerboseOutput
+export type OutputTypeUnits = {
+  flag: FlagOutput
+  basic: BasicOutput
+  detailed: DetailedOutput
+  verbose: VerboseOutput
+}
+
+export type Output<Type extends OutputType> = OutputTypeUnits[Type]

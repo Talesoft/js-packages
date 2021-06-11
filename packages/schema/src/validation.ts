@@ -4,8 +4,6 @@ import type {
   BasicOutput,
   DetailedOutput,
   FlagOutput,
-  Output,
-  OutputType,
   OutputUnit,
   VerboseOutput,
 } from './standard/output/schema'
@@ -41,54 +39,49 @@ export type ValidationContext = {
 
 export type ValidationOptions = Partial<ValidationContext>
 
-export function output(data: Partial<OutputUnit>, context: ValidationContext): VerboseOutput {
-  const absoluteKeywordLocation = `${context.currentSchemaId}${
-    context.keywordLocation ? `/${context.keywordLocation}` : ''
-  }`
-  return {
-    absoluteKeywordLocation,
-    valid: true,
-    keywordLocation: context.keywordLocation,
-    instanceLocation: context.instanceLocation,
-    ...data,
-  }
-}
+const output = (data: Partial<OutputUnit>, context: ValidationContext): VerboseOutput => ({
+  absoluteKeywordLocation: `${context.currentSchemaId !== '#' ? context.currentSchemaId : ''}${
+    context.keywordLocation ? context.keywordLocation : ''
+  }`,
+  valid: true,
+  keywordLocation: context.keywordLocation,
+  instanceLocation: context.instanceLocation,
+  ...data,
+})
 
-export function invalidOutput(
+export const invalidOutput = (
   errors: VerboseOutput[],
   error: string,
   context: ValidationContext,
-): VerboseOutput {
-  return output({ valid: false, error, ...(errors.length > 0 ? { errors } : {}) }, context)
-}
+): VerboseOutput =>
+  output({ valid: false, error, ...(errors.length > 0 ? { errors } : {}) }, context)
 
-export function validOutput(
+export const validOutput = (
   annotations: VerboseOutput[],
   context: ValidationContext,
-): VerboseOutput {
-  return output({ valid: true, ...(annotations.length > 0 ? { annotations } : {}) }, context)
-}
+): VerboseOutput =>
+  output({ valid: true, ...(annotations.length > 0 ? { annotations } : {}) }, context)
 
-export function combineOutputs(
+export const combineOutputs = (
   outputs: VerboseOutput[],
   error: string,
   context: ValidationContext,
-): VerboseOutput {
+): VerboseOutput => {
   const valid = outputs.every(output => output.valid)
   const annotations = outputs.filter(output => output.valid)
   const errors = outputs.filter(output => !output.valid)
   return output(
     {
       valid,
-      ...(annotations.length > 0 ? { annotations } : {}),
-      ...(errors.length > 0 ? { errors } : {}),
-      ...(!valid && error !== undefined ? { error } : {}),
+      ...(annotations.length > 0 ? { annotations } : undefined),
+      ...(errors.length > 0 ? { errors } : undefined),
+      ...(!valid && error !== undefined ? { error } : undefined),
     },
     context,
   )
 }
 
-function flatError(value: OutputUnit): BasicOutput {
+const flatError = (value: VerboseOutput): BasicOutput => {
   return {
     valid: value.valid,
     keywordLocation: value.keywordLocation,
@@ -98,47 +91,40 @@ function flatError(value: OutputUnit): BasicOutput {
   }
 }
 
-function onlyErrors(errors: ReadonlyArray<OutputUnit>): ReadonlyArray<BasicOutput> {
-  return errors
+const onlyErrors = (errors: ReadonlyArray<OutputUnit>): ReadonlyArray<BasicOutput> =>
+  errors
     .filter(error => !error.valid)
     .map(error => (error.errors ? { ...error, errors: onlyErrors(error.errors) } : error))
-}
 
-function flattenBasic(errors: ReadonlyArray<OutputUnit>): ReadonlyArray<BasicOutput> {
-  return errors
+const flattenBasic = (errors: ReadonlyArray<VerboseOutput>): ReadonlyArray<BasicOutput> =>
+  errors
     .filter(error => !error.valid)
     .flatMap(error => [flatError(error), ...(error?.errors ? flattenBasic(error.errors) : [])])
-}
 
-function transformOutput(type: OutputType, data: OutputUnit): Output {
-  switch (type) {
-    case 'flag': {
-      return {
-        valid: data.valid,
+const toFlagOutput = (output: VerboseOutput) => ({ valid: output.valid })
+
+const toBasicOutput = (output: VerboseOutput) => ({
+  valid: output.valid,
+  keywordLocation: output.keywordLocation,
+  instanceLocation: output.instanceLocation,
+  ...(!output.valid
+    ? {
+        errors: flattenBasic([output]),
       }
-    }
-    case 'basic': {
-      return {
-        valid: data.valid,
-        ...(!data.valid
-          ? {
-              errors: flattenBasic([data]),
-            }
-          : undefined),
+    : undefined),
+})
+
+const toDetailedOutput = (output: VerboseOutput) => ({
+  valid: output.valid,
+  keywordLocation: output.keywordLocation,
+  absoluteKeywordLocation: output.absoluteKeywordLocation,
+  instanceLocation: output.instanceLocation,
+  ...(!output.valid
+    ? {
+        errors: onlyErrors(output.errors ?? []),
       }
-    }
-    case 'detailed':
-      return {
-        ...data,
-        ...(!data.valid
-          ? {
-              errors: onlyErrors(data.errors ?? []),
-            }
-          : undefined),
-      }
-  }
-  return data
-}
+    : undefined),
+})
 
 export function enterKeyword(
   keyword: string | number,
@@ -194,7 +180,7 @@ export function getEvaluatedLength(schema: Schema, value: unknown): number {
   return isSchema(schema.items) ? Infinity : schema.prefixItems?.length ?? 0
 }
 
-export function validateValue<SchemaType extends Schema, Value>(
+export function validateWithContext<SchemaType extends Schema, Value>(
   schema: SchemaType,
   value: Value,
   context: ValidationContext,
@@ -222,44 +208,19 @@ export const standardValidators = {
   ...formatAnnotationValidators,
 }
 
-export function validate<SchemaType extends Schema>(
-  outputType: 'flag',
+export const validateVerbose = <SchemaType extends Schema>(
   schema: SchemaType,
   value: unknown,
   options?: ValidationOptions,
-): Promise<FlagOutput>
-export function validate<SchemaType extends Schema>(
-  outputType: 'basic',
-  schema: SchemaType,
-  value: unknown,
-  options?: ValidationOptions,
-): Promise<BasicOutput>
-export function validate<SchemaType extends Schema>(
-  outputType: 'detailed',
-  schema: SchemaType,
-  value: unknown,
-  options?: ValidationOptions,
-): Promise<DetailedOutput>
-export function validate<SchemaType extends Schema>(
-  outputType: 'verbose',
-  schema: SchemaType,
-  value: unknown,
-  options?: ValidationOptions,
-): Promise<VerboseOutput>
-export function validate<SchemaType extends Schema>(
-  outputType: OutputType,
-  schema: SchemaType,
-  value: unknown,
-  options?: ValidationOptions,
-): Promise<Output> {
+): Promise<VerboseOutput> => {
   const id = isObject(schema) && isString(schema.$id) ? schema.$id : '#'
   const context = {
     loadedSchemas: { [id]: schema, ...options?.loadedSchemas },
     anchors: {},
     dynamicAnchors: {},
     currentSchemaId: options?.currentSchemaId ?? id,
-    keywordLocation: options?.keywordLocation ?? '',
-    instanceLocation: options?.instanceLocation ?? '',
+    keywordLocation: options?.keywordLocation ?? '#',
+    instanceLocation: options?.instanceLocation ?? '#',
     validators: {
       ...standardValidators,
       ...options?.validators,
@@ -271,23 +232,7 @@ export function validate<SchemaType extends Schema>(
     formatValidators: standardFormatValidators,
     error: options?.error ?? jsonError,
   }
-  return validateValue(schema, value, context).then(result => transformOutput(outputType, result))
-}
-
-export function validateFlag<SchemaType extends Schema>(
-  schema: SchemaType,
-  value: unknown,
-  options?: ValidationOptions,
-): Promise<FlagOutput> {
-  return validate('flag', schema, value, options)
-}
-
-export function validateBasic<SchemaType extends Schema>(
-  schema: SchemaType,
-  value: unknown,
-  options?: ValidationOptions,
-): Promise<BasicOutput> {
-  return validate('basic', schema, value, options)
+  return validateWithContext(schema, value, context)
 }
 
 export function validateDetailed<SchemaType extends Schema>(
@@ -295,13 +240,21 @@ export function validateDetailed<SchemaType extends Schema>(
   value: unknown,
   options?: ValidationOptions,
 ): Promise<DetailedOutput> {
-  return validate('detailed', schema, value, options)
+  return validateVerbose(schema, value, options).then(toDetailedOutput)
 }
 
-export function validateVerbose<SchemaType extends Schema>(
+export function validateBasic<SchemaType extends Schema>(
   schema: SchemaType,
   value: unknown,
   options?: ValidationOptions,
-): Promise<VerboseOutput> {
-  return validate('verbose', schema, value, options)
+): Promise<BasicOutput> {
+  return validateVerbose(schema, value, options).then(toBasicOutput)
+}
+
+export function validateFlag<SchemaType extends Schema>(
+  schema: SchemaType,
+  value: unknown,
+  options?: ValidationOptions,
+): Promise<FlagOutput> {
+  return validateVerbose(schema, value, options).then(toFlagOutput)
 }

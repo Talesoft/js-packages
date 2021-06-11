@@ -23,6 +23,10 @@ import { isObject, isArray, isNumeric, toInteger } from '@talesoft/types'
 //   : never
 
 export function resolve<ResolvedValue>(pointer: string, value: unknown): Option<ResolvedValue> {
+  if (pointer === '') {
+    return some(value as ResolvedValue)
+  }
+
   if (!pointer.startsWith('/')) {
     return none
   }
@@ -30,7 +34,7 @@ export function resolve<ResolvedValue>(pointer: string, value: unknown): Option<
   const [key, subPath] = pointer.slice(1).split('/', 2)
 
   if (!key) {
-    return some(value as ResolvedValue)
+    return none
   }
 
   const normalizedKey = key.replace(/~1/g, '/').replace(/~0/g, '~')

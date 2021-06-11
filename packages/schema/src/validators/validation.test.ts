@@ -54,66 +54,68 @@ describe('validationValidators', () => {
         { valid: false },
       ],
     ]).it('should detect simple types correctly (%s)', (_, schema, values, expected) => {
-      values.forEach((value: unknown) => {
-        const result = validateFlag(schema, value)
-        expect(result).toEqual(expected)
-      })
+      return Promise.allSettled(
+        values.map((value: unknown) =>
+          validateFlag(schema, value).then(result => expect(result).toEqual(expected)),
+        ),
+      )
     })
   })
 
   describe('uniqueItems', () => {
     it('should output correct verbose information', () => {
-      const result = validateVerbose(
+      return validateVerbose(
         {
           uniqueItems: true,
         },
         [1, 2, 1, 3],
+      ).then(result =>
+        expect(result).toEqual({
+          absoluteKeywordLocation: '#',
+          valid: false,
+          keywordLocation: '#',
+          instanceLocation: '#',
+          errors: [
+            {
+              absoluteKeywordLocation: '#/uniqueItems',
+              valid: false,
+              keywordLocation: '#/uniqueItems',
+              instanceLocation: '#',
+              annotations: [
+                {
+                  absoluteKeywordLocation: '#/uniqueItems',
+                  valid: true,
+                  keywordLocation: '#/uniqueItems',
+                  instanceLocation: '#/0',
+                },
+                {
+                  absoluteKeywordLocation: '#/uniqueItems',
+                  valid: true,
+                  keywordLocation: '#/uniqueItems',
+                  instanceLocation: '#/1',
+                },
+                {
+                  absoluteKeywordLocation: '#/uniqueItems',
+                  valid: true,
+                  keywordLocation: '#/uniqueItems',
+                  instanceLocation: '#/3',
+                },
+              ],
+              errors: [
+                {
+                  absoluteKeywordLocation: '#/uniqueItems',
+                  valid: false,
+                  keywordLocation: '#/uniqueItems',
+                  instanceLocation: '#/2',
+                  error: 'Must not be a duplicate of item at index 0',
+                },
+              ],
+              error: 'Duplicate item validation failed',
+            },
+          ],
+          error: 'Validation failed',
+        }),
       )
-      expect(result).toEqual({
-        absoluteKeywordLocation: '#',
-        valid: false,
-        keywordLocation: '#',
-        instanceLocation: '#',
-        errors: [
-          {
-            absoluteKeywordLocation: '#/uniqueItems',
-            valid: false,
-            keywordLocation: '#/uniqueItems',
-            instanceLocation: '#',
-            annotations: [
-              {
-                absoluteKeywordLocation: '#/uniqueItems',
-                valid: true,
-                keywordLocation: '#/uniqueItems',
-                instanceLocation: '#/0',
-              },
-              {
-                absoluteKeywordLocation: '#/uniqueItems',
-                valid: true,
-                keywordLocation: '#/uniqueItems',
-                instanceLocation: '#/1',
-              },
-              {
-                absoluteKeywordLocation: '#/uniqueItems',
-                valid: true,
-                keywordLocation: '#/uniqueItems',
-                instanceLocation: '#/3',
-              },
-            ],
-            errors: [
-              {
-                absoluteKeywordLocation: '#/uniqueItems',
-                valid: false,
-                keywordLocation: '#/uniqueItems',
-                instanceLocation: '#/2',
-                error: 'Must not be a duplicate of item at index 0',
-              },
-            ],
-            error: 'Duplicate item validation failed',
-          },
-        ],
-        error: 'Validation failed',
-      })
     })
 
     each([
@@ -145,10 +147,11 @@ describe('validationValidators', () => {
         { valid: false },
       ],
     ]).it('should validate uniqueness of items (%s)', (_, schema, values, expected) => {
-      values.forEach((value: unknown) => {
-        const result = validateFlag(schema, value)
-        expect(result).toEqual(expected)
-      })
+      return Promise.allSettled(
+        values.map((value: unknown) =>
+          validateFlag(schema, value).then(result => expect(result).toEqual(expected)),
+        ),
+      )
     })
   })
 })

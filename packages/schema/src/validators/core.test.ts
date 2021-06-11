@@ -70,10 +70,11 @@ describe('coreValidators', () => {
       ],
       ,
     ]).it('should correctly resolve schemas (%s)', (_, schema, values, expected) => {
-      values.forEach((value: unknown) => {
-        const result = validateFlag(schema, value)
-        expect(result).toEqual(expected)
-      })
+      return Promise.allSettled(
+        values.map((value: unknown) =>
+          validateFlag(schema, value).then(result => expect(result).toEqual(expected)),
+        ),
+      )
     })
   })
 })
