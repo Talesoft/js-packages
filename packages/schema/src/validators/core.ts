@@ -62,8 +62,49 @@ export const coreValidators: Record<string, Validator> = {
     return Promise.resolve(none)
   },
 
-  $ref: async (schema, value, context) => {
+  $ref: (schema, value, context) => {
     if (!isRef(schema)) {
+      return Promise.resolve(none)
+    }
+
+    const localContext = enterKeyword('$ref', context)
+    const referencedSchemaId = schema.$ref.startsWith('#')
+      ? context.currentSchemaId
+      : Object.keys(context.loadedSchemas).find(id => schema.$ref.startsWith(id))
+    if (!referencedSchemaId || !context.loadedSchemas[referencedSchemaId]) {
+      // TODO: Try network resolve
+      return Promise.resolve(
+        some(
+          invalidOutput(
+            [],
+            localContext.error`Referenced schema of ref ${schema.$ref} was not found`,
+            localContext,
+          ),
+        ),
+      )
+    }
+
+    const [fragment] = parse(schema.$ref).asArray.flatMap(({ fragment }) => fragment.asArray)
+    const resolvedSchema = resolve(fragment, context.loadedSchemas[referencedSchemaId]).orUndefined
+
+    if (!isSchema(resolvedSchema)) {
+      return Promise.resolve(
+        some(
+          invalidOutput(
+            [],
+            localContext.error`Value referenced at ${schema.$ref} is not a valid schema`,
+            localContext,
+          ),
+        ),
+      )
+    }
+
+    return validateWithContext(resolvedSchema, value, localContext).then(some)
+  },
+
+  $anchor: (schema, value, context) => {
+    // Notice for us, anchors all work the same as we're always resolving at runtime (right now)
+    if (isAnchor(schema)) {
       return Promise.resolve(none)
     }
 

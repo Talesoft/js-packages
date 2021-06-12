@@ -24,6 +24,8 @@ export type Validator = (
 
 export type ContextTransformer = (schema: Schema, context: ValidationContext) => ValidationContext
 
+export type SchemaLoader = (uri: string) => Promise<Option<Schema>>
+
 export type ValidationContext = {
   readonly loadedSchemas: Record<string, Schema>
   readonly anchors: Record<string, Schema>
@@ -34,6 +36,7 @@ export type ValidationContext = {
   readonly validators: Record<string, Validator>
   readonly formatValidators: FormatValidators
   readonly contextTransformers: Record<string, ContextTransformer>
+  readonly schemaLoaders: Record<string, SchemaLoader>
   readonly error: (strings: TemplateStringsArray, ...params: ReadonlyArray<unknown>) => string
 }
 
