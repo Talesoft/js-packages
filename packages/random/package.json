@@ -1,17 +1,17 @@
 {
-  "name": "@talesoft/jest-bridge",
-  "version": "0.1.1",
+  "name": "@talesoft/random",
+  "version": "0.1.0",
   "license": "MIT",
+  "main": "cjs/index.js",
+  "types": "esm/index.d.ts",
   "scripts": {
-    "build": "echo \"No build required\"",
-    "test": "echo \"No tests required\"",
+    "build": "tsc && babel src --out-dir cjs --extensions .ts,.tsx --delete-dir-on-start",
+    "test": "jest",
     "lint": "eslint \"src/**/*.ts\"",
     "lint:fix": "eslint \"src/**/*.ts\" --fix"
   },
-  "dependencies": {
-    "jest-resolve": "^26.6.2"
-  },
   "devDependencies": {
+    "@talesoft/jest-bridge": "^0.1.1",
     "@types/jest": "^26.0.20",
     "@types/node": "^14.14.25",
     "@typescript-eslint/eslint-plugin": "^4.14.2",

@@ -85,6 +85,11 @@ export const coreValidators: Record<string, Validator> = {
     }
 
     const [fragment] = parse(schema.$ref).asArray.flatMap(({ fragment }) => fragment.asArray)
+
+    if (!fragment.startsWith('/')) {
+      // This is an anchor (hopefully defined through $anchor)
+    }
+
     const resolvedSchema = resolve(fragment, context.loadedSchemas[referencedSchemaId]).orUndefined
 
     if (!isSchema(resolvedSchema)) {
@@ -105,10 +110,10 @@ export const coreValidators: Record<string, Validator> = {
   $anchor: (schema, value, context) => {
     // Notice for us, anchors all work the same as we're always resolving at runtime (right now)
     if (isAnchor(schema)) {
+      const localContext = enterKeyword('$anchor', context)
       return Promise.resolve(none)
     }
 
-    const localContext = enterKeyword('$ref', context)
     const referencedSchemaId = schema.$ref.startsWith('#')
       ? context.currentSchemaId
       : Object.keys(context.loadedSchemas).find(id => schema.$ref.startsWith(id))

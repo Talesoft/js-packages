@@ -11,6 +11,8 @@
     "build:result": "lerna run build --no-bail --scope=@talesoft/result",
     "build:option": "lerna run build --no-bail --scope=@talesoft/option",
     "build:json-pointer": "lerna run build --no-bail --scope=@talesoft/json-pointer",
+    "build:immutable": "lerna run build --no-bail --scope=@talesoft/immutable",
+    "build:random": "lerna run build --no-bail --scope=@talesoft/random",
     "build:types": "lerna run build --no-bail --scope=@talesoft/types",
     "build:equals": "lerna run build --no-bail --scope=@talesoft/equals",
     "build:uri": "lerna run build --no-bail --scope=@talesoft/uri",

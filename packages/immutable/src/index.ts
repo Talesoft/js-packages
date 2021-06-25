@@ -1,2 +1,3 @@
-export type { Reducer, ReducerState, ReducerAction, ReducerList, ReducerListState } from './types'
-export { default as combineReducers } from './operations'
+export { updateIndex, push, unshift } from './array'
+export type { RemovableKeys } from './object'
+export { removeKey, setKey, updateKey } from './object'

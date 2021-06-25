@@ -1,7 +1,3 @@
-export function negate(predicate: (value: unknown) => boolean): (value: unknown) => boolean {
-  return (value: unknown) => !predicate(value)
-}
-
 export function isUndefined(value: unknown): value is undefined {
   return value === undefined
 }
