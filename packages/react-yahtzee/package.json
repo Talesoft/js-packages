@@ -18,6 +18,8 @@
     "react": "*"
   },
   "devDependencies": {
+    "@talesoft/random": "^0.1.0",
+    "@talesoft/immutable": "^0.1.0",
     "@babel/cli": "^7.12.13",
     "@babel/core": "^7.12.13",
     "@babel/preset-env": "^7.12.13",

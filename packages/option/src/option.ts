@@ -31,7 +31,7 @@ export function some<Value>(value: Value): Some<Value> {
       orNull: { value },
       asArray: { get: () => [value] },
     },
-  )
+  ) as Some<Value>
 }
 
 export const none: None = Object.defineProperties(
@@ -42,7 +42,7 @@ export const none: None = Object.defineProperties(
     orNull: { value: null },
     asArray: { value: [] },
   },
-)
+) as None
 
 export function fromPredicate<Value>(
   predicate: (value: Value) => boolean,

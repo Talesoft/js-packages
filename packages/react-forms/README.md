@@ -1,5 +1,5 @@
-Talesoft React Forms
-====================
+@talesoft/react-forms
+=====================
 
 What is it
 ----------
@@ -32,12 +32,14 @@ Features
 - Can be used alongside Formik or as a (almost) drop-in replacement.
 
 Install
--------
-
-Use NPM to install the package
+=======
 
 ```bash
+// Yarn
 yarn add @talesoft/react-forms
+
+// NPM
+npm i @talesoft/react-forms
 ```
 
 TypeScript typings are included (No `@types/` package needed)

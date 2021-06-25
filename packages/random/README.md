@@ -3,6 +3,19 @@
 
 A minimal, seedable, immutable RNG for JavaScript and TypeScript.
 
+Install
+=======
+
+```bash
+// Yarn
+yarn add @talesoft/random
+
+// NPM
+npm i @talesoft/random
+```
+
+TypeScript typings are included (No `@types/` package needed)
+
 Usage
 =====
 
