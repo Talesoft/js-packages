@@ -48,7 +48,7 @@ export const createRandom = (initialSeed = generateEntropy()): RandomResult => {
       integerBetween: {
         value: (min: number, max: number): number => Math.floor(min + value * (max - min)),
       },
-      itemOf: { value: <Value>(items: Value[]): Value => items[value * items.length] },
+      itemOf: { value: <Value>(items: Value[]): Value => items[Math.floor(value * items.length)] },
     },
   ) as RandomResult
 }
