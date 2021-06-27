@@ -18,9 +18,6 @@ module.exports = {
                 configFile: resolve(__dirname, '..', 'tsconfig.stories.json'),
               }
             },
-            {
-              loader: require.resolve('react-docgen-typescript-loader'),
-            },
           ],
         },
       ],

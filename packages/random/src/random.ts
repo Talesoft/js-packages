@@ -26,14 +26,14 @@ const generateEntropy: EntropyGenerator = () => {
 }
 
 export type RandomResult = {
-  seed: number
-  value: number
-  next: RandomResult
-  valueTo(max: number): number
-  valueBetween(min: number, max: number): number
-  integerTo(max: number): number
-  integerBetween(min: number, max: number): number
-  itemOf<Value>(items: Value[]): Value
+  readonly seed: number
+  readonly value: number
+  readonly next: RandomResult
+  readonly valueTo: (max: number) => number
+  readonly valueBetween: (min: number, max: number) => number
+  readonly integerTo: (max: number) => number
+  readonly integerBetween: (min: number, max: number) => number
+  readonly itemOf: <Value>(items: Value[]) => Value
 }
 
 export const createRandom = (initialSeed = generateEntropy()): RandomResult => {

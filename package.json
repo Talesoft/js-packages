@@ -16,12 +16,14 @@
     "build:types": "lerna run build --no-bail --scope=@talesoft/types",
     "build:equals": "lerna run build --no-bail --scope=@talesoft/equals",
     "build:uri": "lerna run build --no-bail --scope=@talesoft/uri",
+    "build:react-yahtzee": "lerna run build --no-bail --scope=@talesoft/react-yahtzee",
     "build:schema": "lerna run build --no-bail --scope=@talesoft/schema",
     "build:openapi": "lerna run build --no-bail --scope=@talesoft/openapi",
     "build:finished": "lerna run build --no-bail --scope=@talesoft/try-catch --scope=@talesoft/env --scope=@talesoft/result --scope=@talesoft/option --scope=@talesoft/schema --scope=@talesoft/uri --scope=@talesoft/equals --scope=@talesoft/types --scope=@talesoft/types --scope=@talesoft/json-pointer --scope=@talesoft/use-async --scope=@talesoft/use-storage --scope=@talesoft/react-forms",
     "publish:dev": "lerna publish --canary --preid dev",
     "publish": "lerna publish",
     "storybook:react-forms": "lerna run storybook --parallel --scope=@talesoft/react-forms",
+    "storybook:react-yahtzee": "lerna run storybook --parallel --scope=@talesoft/react-yahtzee",
     "postinstall": "yarn bootstrap"
   },
   "workspaces": [

@@ -42,7 +42,7 @@ console.log(random.integerBetween(20))
 console.log(random.itemOf(['a', 'b', 'c', 'd']))
 
 // Move the RNG
-const nextRandom = random.next()
+const nextRandom = random.next
 
 console.log(nextRandom.valueTo(10))
 
@@ -52,7 +52,7 @@ const { nextRandom, numbers } = Array
   .reduce(
     ({ nextRandom, numbers }) => ({
       numbers: [...numbers, nextRandom.valueBetween(0, 100)],
-      nextRandom: nextRandom.next()
+      nextRandom: nextRandom.next
     }),
     {
       nextRandom: createRandom(1337),
