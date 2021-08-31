@@ -1,4 +1,4 @@
-@reactlib
+@talesoft
 =========
 
-A set of packages and utilities for working with React and React Native.
+A collection of JavaScript/TypeScript packages made by Talesoft.
