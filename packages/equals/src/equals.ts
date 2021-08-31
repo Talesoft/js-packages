@@ -9,7 +9,7 @@ import { isArray, isObject } from '@talesoft/types'
  * @param right
  * @returns
  */
-export default function equals<Value>(left: Value, right: Value): boolean {
+const equals = <Value>(left: Value, right: Value): boolean => {
   if (typeof left !== typeof right) {
     return false
   }
@@ -32,3 +32,5 @@ export default function equals<Value>(left: Value, right: Value): boolean {
 
   return false
 }
+
+export default equals

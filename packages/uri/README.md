@@ -1,35 +1,34 @@
-@talesoft/try-catch
-=====================
+@talesoft/uri
+=============
 
-A simple functional wrapper for a try-catch statement.
+A small set of URI utility functions.
 
-Makes it easier to handle exceptions immutably.
+Install
+=======
+
+```bash
+// Yarn
+yarn add @talesoft/uri
+
+// NPM
+npm i @talesoft/uri
+```
+
+TypeScript typings are included (No `@types/` package needed)
 
 Usage
 =====
 
 ```ts
-import tryCatch from '@talesoft/try-catch'
+import { parse, stringify, resolve } from '@talesoft/uri'
 
-function somethingThatCanThrow() {
+const { scheme, userInfo, host, port, path, query, fragment } = parse(
+  'https://example.com/some/path?query=test#someFragment'
+)
 
-  if (amIWrong()) {
 
-    throw new Error('I\'m wrong!')
-  }
+const uri = stringify({ scheme, userInfo, host, port, path, query, fragment })
 
-  return 'Some result'
-}
+const fullUri = resolve('https://example.com', '/some/path')
 
-const result = tryCatch(somethingThatCanThrow)
-
-// result is of type `string | Error`
-
-const alwaysResult = tryCatch(somethingThatCanThrow, () => 'Other result')
-
-// alwaysResult is of type `string` ('Some result' or 'Other result')
-
-const alwaysResult = tryCatch(somethingThatCanThrow, error => error.message)
-
-// alwaysResult is of type `string` ('Some result' or 'I\'m wrong!')
 ```
