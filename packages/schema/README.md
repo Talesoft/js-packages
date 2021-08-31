@@ -78,15 +78,13 @@ import {
 } from '@talesoft/schema'
 
 const product = objectOf({
-  properties: {
-    title: string({ minLength: 5 }),
-    description: oneOf(string(), schemaNull()),
-    shortDescription: nullable(string()),
-    price: number({ minimum: 0, maximum: 1000 }),
-    stock: integer({ minimum: 0 }),
-    tags: arrayOf(string(), { maxItems: 5 }),
-  }
-})
+  title: string({ minLength: 5 }),
+  description: oneOf(string(), schemaNull()),
+  shortDescription: nullable(string()),
+  price: number({ minimum: 0, maximum: 1000 }),
+  stock: integer({ minimum: 0 }),
+  tags: arrayOf(string(), { maxItems: 5 }),
+}, { required: ['title', 'price', 'tags'] })
 ```
 
 #### Composition of schemas
