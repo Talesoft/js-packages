@@ -1,4 +1,5 @@
 import type { FormErrorImmutableList } from '../validation/common'
+import type { FormFieldImmutableState } from './common'
 import { List } from 'immutable'
 import useFormContext from '../forms/useFormContext'
 import { ValidationState } from '../validation/common'
@@ -10,7 +11,7 @@ export type UseFieldErrorsResult = {
 
 const useFieldErrors = (name: string): UseFieldErrorsResult => {
   const { state } = useFormContext()
-  const fieldState = state.getIn(['fieldStates', name])
+  const fieldState = state.getIn(['fieldStates', name]) as FormFieldImmutableState
   const validationState = (fieldState?.get('validationState') ??
     ValidationState.NOT_VALIDATED) as ValidationState
   const errors = (fieldState?.get('errors') ?? List()) as FormErrorImmutableList

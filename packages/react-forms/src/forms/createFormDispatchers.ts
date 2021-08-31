@@ -1,6 +1,7 @@
 import type { ValidationError } from 'yup'
 import type { FormErrors, Validator } from '../validation/common'
 import type { FormOptions, FormImmutableState, FormDispatch } from './common'
+import type { Seq } from 'immutable'
 import { Map } from 'immutable'
 import { ValidationState } from '../validation/common'
 
@@ -53,7 +54,7 @@ const createValidator = <Value extends Record<string, unknown>>(
             ...(errors[error.path ?? ''] ?? []),
             {
               message: error.message,
-              parameters: Map(),
+              parameters: Map<string, Seq<number, unknown>>(),
             },
           ],
         }),
@@ -88,7 +89,8 @@ const createFormDispatchers = <Value extends Record<string, unknown>>(
   const unregisterField = (path: string) => {
     dispatch({ type: 'unregisterField', path })
   }
-  const getFieldValue = (path: string) => state.get('value').getIn(path.split('.'))
+  const getFieldValue = <Value>(path: string): Value =>
+    state.get('value').getIn(path.split('.')) as Value
   const setFieldValue = <Value>(path: string, value: Value) => {
     dispatch({ type: 'setFieldValue', path, value })
   }

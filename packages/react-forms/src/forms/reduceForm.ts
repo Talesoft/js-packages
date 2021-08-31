@@ -1,4 +1,5 @@
 import type { FormAction, FormImmutableState } from './common'
+import type { FormFieldImmutableState } from '../fields/common'
 import createInitialFieldState from '../fields/createInitialFieldState'
 import createInitialFormState from './createInitialFormState'
 import { List } from 'immutable'
@@ -20,7 +21,10 @@ const reduceForm = <Value extends Record<string, unknown>>(
       return state
         .update('value', value => value.setIn(path, action.value))
         .update('fieldStates', fieldStates =>
-          fieldStates.update(action.path, fieldState => fieldState.set('changed', true)),
+          fieldStates.update(
+            action.path,
+            fieldState => fieldState?.set('changed', true) as FormFieldImmutableState,
+          ),
         )
     case 'registerField':
       return state.update('fieldStates', fieldStates =>
@@ -36,11 +40,13 @@ const reduceForm = <Value extends Record<string, unknown>>(
       const errors = List(action.errors)
       const validationState =
         (errors.size ?? 0) > 0 ? ValidationState.INVALID : ValidationState.VALID
-      const newFieldStates = fieldStates.update(action.path, fieldState =>
-        fieldState.merge({
-          errors,
-          validationState: validationState,
-        }),
+      const newFieldStates = fieldStates.update(
+        action.path,
+        fieldState =>
+          fieldState?.merge({
+            errors,
+            validationState: validationState,
+          }) as FormFieldImmutableState,
       )
       return state.merge({
         fieldStates: newFieldStates,
