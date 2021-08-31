@@ -1,0 +1,548 @@
+<!doctype html>
+<html class="default no-js">
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<title>Talesoft JSON-Schema - v0.1.2</title>
+	<meta name="description" content="Documentation for Talesoft JSON-Schema - v0.1.2">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" href="assets/css/main.css">
+	<script async src="assets/js/search.js" id="search-script"></script>
+</head>
+<body>
+<header>
+	<div class="tsd-page-toolbar">
+		<div class="container">
+			<div class="table-wrap">
+				<div class="table-cell" id="tsd-search" data-index="assets/js/search.json" data-base=".">
+					<div class="field">
+						<label for="tsd-search-field" class="tsd-widget search no-caption">Search</label>
+						<input id="tsd-search-field" type="text" />
+					</div>
+					<ul class="results">
+						<li class="state loading">Preparing search index...</li>
+						<li class="state failure">The search index is not available</li>
+					</ul>
+					<a href="index.html" class="title">Talesoft JSON-Schema - v0.1.2</a>
+				</div>
+				<div class="table-cell" id="tsd-widgets">
+					<div id="tsd-filter">
+						<a href="#" class="tsd-widget options no-caption" data-toggle="options">Options</a>
+						<div class="tsd-filter-group">
+							<div class="tsd-select" id="tsd-filter-visibility">
+								<span class="tsd-select-label">All</span>
+								<ul class="tsd-select-list">
+									<li data-value="public">Public</li>
+									<li data-value="protected">Public/Protected</li>
+									<li data-value="private" class="selected">All</li>
+								</ul>
+							</div>
+							<input type="checkbox" id="tsd-filter-inherited" checked />
+							<label class="tsd-widget" for="tsd-filter-inherited">Inherited</label>
+							<input type="checkbox" id="tsd-filter-externals" checked />
+							<label class="tsd-widget" for="tsd-filter-externals">Externals</label>
+						</div>
+					</div>
+					<a href="#" class="tsd-widget menu no-caption" data-toggle="menu">Menu</a>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="tsd-page-title">
+		<div class="container">
+			<h1>Talesoft JSON-Schema - v0.1.2</h1>
+		</div>
+	</div>
+</header>
+<div class="container container-main">
+	<div class="row">
+		<div class="col-8 col-content">
+			<div class="tsd-panel tsd-typography">
+				<a href="#talesoftschema" id="talesoftschema" style="color: inherit; text-decoration: none;">
+					<h1>@talesoft/schema</h1>
+				</a>
+				<p>A very clean and lightweight implementation of the <a href="https://json-schema.org/">JSON-Schema</a> standard.</p>
+				<p>It provides easy construction of schemas and a full, blazing-fast validator.</p>
+				<p>Especially for TypeScript users it also provides clean and proper typing for JSON-Schemas.</p>
+				<a href="#install" id="install" style="color: inherit; text-decoration: none;">
+					<h1>Install</h1>
+				</a>
+				<pre><code class="language-bash"><span style="color: #000000">// Yarn</span>
+<span style="color: #000000">yarn add @talesoft/schema</span>
+
+<span style="color: #000000">// NPM</span>
+<span style="color: #000000">npm i @talesoft/schema</span>
+</code></pre>
+				<p>TypeScript typings are included (No <code>@types/</code> package needed)</p>
+				<a href="#usage" id="usage" style="color: inherit; text-decoration: none;">
+					<h1>Usage</h1>
+				</a>
+				<a href="#type-a-schema" id="type-a-schema" style="color: inherit; text-decoration: none;">
+					<h3>Type a schema</h3>
+				</a>
+				<p>This library comes with a lot of ready-to-use types for common schemas.</p>
+				<p>For most common use-cases you can fully rely on the <code>Schema</code>-type, which
+				includes all properties known to the JSON-Schema standard.</p>
+				<pre><code class="language-ts"><span style="color: #AF00DB">import</span><span style="color: #000000"> </span><span style="color: #AF00DB">type</span><span style="color: #000000"> { </span><span style="color: #001080">Schema</span><span style="color: #000000"> } </span><span style="color: #AF00DB">from</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;@talesoft/schema&#039;</span>
+
+<span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">user</span><span style="color: #000000">: </span><span style="color: #267F99">Schema</span><span style="color: #000000"> = {</span>
+<span style="color: #000000">  </span><span style="color: #001080">type:</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;object&#039;</span><span style="color: #000000">,</span>
+<span style="color: #000000">  </span><span style="color: #001080">properties:</span><span style="color: #000000"> {</span>
+<span style="color: #000000">    </span><span style="color: #001080">email:</span><span style="color: #000000"> { </span><span style="color: #001080">type:</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;string&#039;</span><span style="color: #000000">, </span><span style="color: #001080">format:</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;email&#039;</span><span style="color: #000000"> },</span>
+<span style="color: #000000">    </span><span style="color: #001080">password:</span><span style="color: #000000"> { </span><span style="color: #001080">type:</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;string&#039;</span><span style="color: #000000">, </span><span style="color: #001080">minLength:</span><span style="color: #000000"> </span><span style="color: #098658">5</span><span style="color: #000000"> },</span>
+<span style="color: #000000">  },</span>
+<span style="color: #000000">}</span>
+</code></pre>
+				<a href="#build-schemas-easily-with-factories" id="build-schemas-easily-with-factories" style="color: inherit; text-decoration: none;">
+					<h3>Build schemas easily with factories</h3>
+				</a>
+				<p>With a set of factories you can build fully-fledged schemas a lot easier.</p>
+				<p>We avoid bringing in complex, reference-based builders so that you can use
+					the factories in functional programming patterns for even smarter and faster
+				schema creation.</p>
+				<pre><code class="language-ts"><span style="color: #AF00DB">import</span><span style="color: #000000"> { </span><span style="color: #001080">object</span><span style="color: #000000">, </span><span style="color: #001080">string</span><span style="color: #000000"> } </span><span style="color: #AF00DB">from</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;@talesoft/schema&#039;</span>
+
+<span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">user</span><span style="color: #000000"> = </span><span style="color: #795E26">object</span><span style="color: #000000">({</span>
+<span style="color: #000000">  </span><span style="color: #001080">properties:</span><span style="color: #000000"> {</span>
+<span style="color: #000000">    </span><span style="color: #001080">email:</span><span style="color: #000000"> </span><span style="color: #795E26">string</span><span style="color: #000000">({ </span><span style="color: #001080">format:</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;email&#039;</span><span style="color: #000000"> }),</span>
+<span style="color: #000000">    </span><span style="color: #001080">password:</span><span style="color: #000000"> </span><span style="color: #795E26">string</span><span style="color: #000000">({ </span><span style="color: #001080">minLength:</span><span style="color: #000000"> </span><span style="color: #098658">5</span><span style="color: #000000"> }),</span>
+<span style="color: #000000">  },</span>
+<span style="color: #000000">  </span><span style="color: #001080">required:</span><span style="color: #000000"> [</span><span style="color: #A31515">&#039;email&#039;</span><span style="color: #000000">],</span>
+<span style="color: #000000">})</span>
+</code></pre>
+				<a href="#showcasing-some-factories-find-more-in-the-docs" id="showcasing-some-factories-find-more-in-the-docs" style="color: inherit; text-decoration: none;">
+					<h4>Showcasing some factories (find more in the docs)</h4>
+				</a>
+				<pre><code class="language-ts"><span style="color: #008000">// Primitives</span>
+<span style="color: #AF00DB">import</span><span style="color: #000000"> {</span>
+<span style="color: #000000">  </span><span style="color: #001080">schemaNull</span><span style="color: #000000">,</span>
+<span style="color: #000000">  </span><span style="color: #001080">boolean</span><span style="color: #000000">,</span>
+<span style="color: #000000">  </span><span style="color: #001080">string</span><span style="color: #000000">,</span>
+<span style="color: #000000">  </span><span style="color: #001080">number</span><span style="color: #000000">,</span>
+<span style="color: #000000">  </span><span style="color: #001080">integer</span><span style="color: #000000">,</span>
+<span style="color: #000000">  </span><span style="color: #001080">arrayOf</span><span style="color: #000000">,</span>
+<span style="color: #000000">  </span><span style="color: #001080">objectOf</span><span style="color: #000000">,</span>
+<span style="color: #000000">  </span><span style="color: #001080">nullable</span><span style="color: #000000">,</span>
+<span style="color: #000000">} </span><span style="color: #AF00DB">from</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;@talesoft/schema&#039;</span>
+
+<span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">product</span><span style="color: #000000"> = </span><span style="color: #795E26">objectOf</span><span style="color: #000000">({</span>
+<span style="color: #000000">  </span><span style="color: #001080">title:</span><span style="color: #000000"> </span><span style="color: #795E26">string</span><span style="color: #000000">({ </span><span style="color: #001080">minLength:</span><span style="color: #000000"> </span><span style="color: #098658">5</span><span style="color: #000000"> }),</span>
+<span style="color: #000000">  </span><span style="color: #001080">description:</span><span style="color: #000000"> </span><span style="color: #795E26">oneOf</span><span style="color: #000000">(</span><span style="color: #795E26">string</span><span style="color: #000000">(), </span><span style="color: #795E26">schemaNull</span><span style="color: #000000">()),</span>
+<span style="color: #000000">  </span><span style="color: #001080">shortDescription:</span><span style="color: #000000"> </span><span style="color: #795E26">nullable</span><span style="color: #000000">(</span><span style="color: #795E26">string</span><span style="color: #000000">()),</span>
+<span style="color: #000000">  </span><span style="color: #001080">price:</span><span style="color: #000000"> </span><span style="color: #795E26">number</span><span style="color: #000000">({ </span><span style="color: #001080">minimum:</span><span style="color: #000000"> </span><span style="color: #098658">0</span><span style="color: #000000">, </span><span style="color: #001080">maximum:</span><span style="color: #000000"> </span><span style="color: #098658">1000</span><span style="color: #000000"> }),</span>
+<span style="color: #000000">  </span><span style="color: #001080">stock:</span><span style="color: #000000"> </span><span style="color: #795E26">integer</span><span style="color: #000000">({ </span><span style="color: #001080">minimum:</span><span style="color: #000000"> </span><span style="color: #098658">0</span><span style="color: #000000"> }),</span>
+<span style="color: #000000">  </span><span style="color: #001080">tags:</span><span style="color: #000000"> </span><span style="color: #795E26">arrayOf</span><span style="color: #000000">(</span><span style="color: #795E26">string</span><span style="color: #000000">(), { </span><span style="color: #001080">maxItems:</span><span style="color: #000000"> </span><span style="color: #098658">5</span><span style="color: #000000"> }),</span>
+<span style="color: #000000">}, { </span><span style="color: #001080">required:</span><span style="color: #000000"> [</span><span style="color: #A31515">&#039;title&#039;</span><span style="color: #000000">, </span><span style="color: #A31515">&#039;price&#039;</span><span style="color: #000000">, </span><span style="color: #A31515">&#039;tags&#039;</span><span style="color: #000000">] })</span>
+</code></pre>
+				<a href="#composition-of-schemas" id="composition-of-schemas" style="color: inherit; text-decoration: none;">
+					<h4>Composition of schemas</h4>
+				</a>
+				<p>See <a href="https://json-schema.org/understanding-json-schema/reference/combining.html">the official JSON-Schema docs</a> for
+				more information.</p>
+				<pre><code class="language-ts"><span style="color: #AF00DB">import</span><span style="color: #000000"> { </span><span style="color: #001080">allOf</span><span style="color: #000000">, </span><span style="color: #001080">anyOf</span><span style="color: #000000">, </span><span style="color: #001080">oneOf</span><span style="color: #000000">, </span><span style="color: #001080">not</span><span style="color: #000000">, ... } </span><span style="color: #AF00DB">from</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;@talesoft/schema&#039;</span>
+
+<span style="color: #795E26">allOf</span><span style="color: #000000">(</span><span style="color: #795E26">string</span><span style="color: #000000">(), { </span><span style="color: #001080">minLength:</span><span style="color: #000000"> </span><span style="color: #098658">5</span><span style="color: #000000"> }) </span><span style="color: #008000">// { allOf: [{ type: &#039;string&#039; }, { minLength: 5 }] }</span>
+<span style="color: #795E26">anyOf</span><span style="color: #000000">(</span><span style="color: #795E26">string</span><span style="color: #000000">(), </span><span style="color: #795E26">number</span><span style="color: #000000">(), </span><span style="color: #795E26">schemaNull</span><span style="color: #000000">()) </span><span style="color: #008000">// { anyOf: [{ type: &#039;string&#039; }, { type: &#039;number&#039; }, { type: &#039;null&#039; }]}</span>
+<span style="color: #795E26">oneOf</span><span style="color: #000000">(</span><span style="color: #795E26">string</span><span style="color: #000000">(), </span><span style="color: #795E26">schemaNull</span><span style="color: #000000">()) </span><span style="color: #008000">// { anyOf: [{ type: &#039;string&#039; }, { type: &#039;number&#039; }, { type: &#039;null&#039; }]}</span>
+<span style="color: #795E26">not</span><span style="color: #000000">(</span><span style="color: #795E26">anyOf</span><span style="color: #000000">(</span><span style="color: #795E26">string</span><span style="color: #000000">(), </span><span style="color: #795E26">number</span><span style="color: #000000">()))</span>
+</code></pre>
+			</div>
+		</div>
+		<div class="col-4 col-menu menu-sticky-wrap menu-highlight">
+			<nav class="tsd-navigation primary">
+				<ul>
+					<li class=" ">
+						<a href="modules.html">Exports</a>
+					</li>
+				</ul>
+			</nav>
+			<nav class="tsd-navigation secondary menu-sticky">
+				<ul class="before-current">
+					<li class=" tsd-kind-type-alias tsd-has-type-parameter">
+						<a href="modules.html#AllOfSchema" class="tsd-kind-icon">All<wbr>OfSchema</a>
+					</li>
+					<li class=" tsd-kind-type-alias tsd-has-type-parameter">
+						<a href="modules.html#Anchor" class="tsd-kind-icon">Anchor</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="modules.html#AnchorString" class="tsd-kind-icon">Anchor<wbr>String</a>
+					</li>
+					<li class=" tsd-kind-type-alias tsd-has-type-parameter">
+						<a href="modules.html#AnyOfSchema" class="tsd-kind-icon">Any<wbr>OfSchema</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="modules.html#AnySchema" class="tsd-kind-icon">Any<wbr>Schema</a>
+					</li>
+					<li class=" tsd-kind-type-alias tsd-has-type-parameter">
+						<a href="modules.html#ApplicatorProperties" class="tsd-kind-icon">Applicator<wbr>Properties</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="modules.html#ArrayItemsTypeSchema" class="tsd-kind-icon">Array<wbr>Items<wbr>Type<wbr>Schema</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="modules.html#ArrayTypeSchema" class="tsd-kind-icon">Array<wbr>Type<wbr>Schema</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="modules.html#BasicOutput" class="tsd-kind-icon">Basic<wbr>Output</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="modules.html#BooleanTypeSchema" class="tsd-kind-icon">Boolean<wbr>Type<wbr>Schema</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="modules.html#ContentProperties" class="tsd-kind-icon">Content<wbr>Properties</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="modules.html#Context" class="tsd-kind-icon">Context</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="modules.html#ContextTransformer" class="tsd-kind-icon">Context<wbr>Transformer</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="modules.html#CoreProperties" class="tsd-kind-icon">Core<wbr>Properties</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="modules.html#DetailedOutput" class="tsd-kind-icon">Detailed<wbr>Output</a>
+					</li>
+					<li class=" tsd-kind-type-alias tsd-has-type-parameter">
+						<a href="modules.html#DynamicAnchor" class="tsd-kind-icon">Dynamic<wbr>Anchor</a>
+					</li>
+					<li class=" tsd-kind-type-alias tsd-has-type-parameter">
+						<a href="modules.html#DynamicReference" class="tsd-kind-icon">Dynamic<wbr>Reference</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="modules.html#ErrorTag" class="tsd-kind-icon">Error<wbr>Tag</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="modules.html#FlagOutput" class="tsd-kind-icon">Flag<wbr>Output</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="modules.html#FormatAnnotationProperties" class="tsd-kind-icon">Format<wbr>Annotation<wbr>Properties</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="modules.html#FormatValidator" class="tsd-kind-icon">Format<wbr>Validator</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="modules.html#FormatValidators" class="tsd-kind-icon">Format<wbr>Validators</a>
+					</li>
+					<li class=" tsd-kind-type-alias tsd-has-type-parameter">
+						<a href="modules.html#IfThenElseSchema" class="tsd-kind-icon">If<wbr>Then<wbr>Else<wbr>Schema</a>
+					</li>
+					<li class=" tsd-kind-type-alias tsd-has-type-parameter">
+						<a href="modules.html#IfThenSchema" class="tsd-kind-icon">If<wbr>Then<wbr>Schema</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="modules.html#IntegerTypeSchema" class="tsd-kind-icon">Integer<wbr>Type<wbr>Schema</a>
+					</li>
+					<li class=" tsd-kind-type-alias tsd-has-type-parameter">
+						<a href="modules.html#Items" class="tsd-kind-icon">Items</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="modules.html#JsType" class="tsd-kind-icon">Js<wbr>Type</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="modules.html#LatestSchemaStandard" class="tsd-kind-icon">Latest<wbr>Schema<wbr>Standard</a>
+					</li>
+					<li class=" tsd-kind-type-alias tsd-has-type-parameter">
+						<a href="modules.html#MetaDataProperties" class="tsd-kind-icon">Meta<wbr>Data<wbr>Properties</a>
+					</li>
+					<li class=" tsd-kind-type-alias tsd-has-type-parameter">
+						<a href="modules.html#NotSchema" class="tsd-kind-icon">Not<wbr>Schema</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="modules.html#NothingSchema" class="tsd-kind-icon">Nothing<wbr>Schema</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="modules.html#NullTypeSchema" class="tsd-kind-icon">Null<wbr>Type<wbr>Schema</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="modules.html#NumberTypeSchema" class="tsd-kind-icon">Number<wbr>Type<wbr>Schema</a>
+					</li>
+					<li class=" tsd-kind-type-alias tsd-has-type-parameter">
+						<a href="modules.html#ObjectPropertiesTypeSchema" class="tsd-kind-icon">Object<wbr>Properties<wbr>Type<wbr>Schema</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="modules.html#ObjectTypeSchema" class="tsd-kind-icon">Object<wbr>Type<wbr>Schema</a>
+					</li>
+					<li class=" tsd-kind-type-alias tsd-has-type-parameter">
+						<a href="modules.html#OneOfSchema" class="tsd-kind-icon">One<wbr>OfSchema</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="modules.html#OutputUnit" class="tsd-kind-icon">Output<wbr>Unit</a>
+					</li>
+					<li class=" tsd-kind-type-alias tsd-has-type-parameter">
+						<a href="modules.html#Properties" class="tsd-kind-icon">Properties</a>
+					</li>
+					<li class=" tsd-kind-type-alias tsd-has-type-parameter">
+						<a href="modules.html#RecursiveAnchor" class="tsd-kind-icon">Recursive<wbr>Anchor</a>
+					</li>
+					<li class=" tsd-kind-type-alias tsd-has-type-parameter">
+						<a href="modules.html#RecursiveReference" class="tsd-kind-icon">Recursive<wbr>Reference</a>
+					</li>
+					<li class=" tsd-kind-type-alias tsd-has-type-parameter">
+						<a href="modules.html#Reference" class="tsd-kind-icon">Reference</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="modules.html#RegexString" class="tsd-kind-icon">Regex<wbr>String</a>
+					</li>
+					<li class=" tsd-kind-type-alias tsd-has-type-parameter">
+						<a href="modules.html#Schema" class="tsd-kind-icon">Schema</a>
+					</li>
+					<li class=" tsd-kind-type-alias tsd-has-type-parameter">
+						<a href="modules.html#SchemaObject" class="tsd-kind-icon">Schema<wbr>Object</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="modules.html#SchemaStandard" class="tsd-kind-icon">Schema<wbr>Standard</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="modules.html#StringTypeSchema" class="tsd-kind-icon">String<wbr>Type<wbr>Schema</a>
+					</li>
+					<li class=" tsd-kind-type-alias tsd-has-type-parameter">
+						<a href="modules.html#UnevaluatedProperties" class="tsd-kind-icon">Unevaluated<wbr>Properties</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="modules.html#UriReferenceString" class="tsd-kind-icon">Uri<wbr>Reference<wbr>String</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="modules.html#ValidationOptions" class="tsd-kind-icon">Validation<wbr>Options</a>
+					</li>
+					<li class=" tsd-kind-type-alias tsd-has-type-parameter">
+						<a href="modules.html#ValidationProperties" class="tsd-kind-icon">Validation<wbr>Properties</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="modules.html#Validator" class="tsd-kind-icon">Validator</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="modules.html#VerboseOutput" class="tsd-kind-icon">Verbose<wbr>Output</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="modules.html#Vocabulary" class="tsd-kind-icon">Vocabulary</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="modules.html#applicatorProperties" class="tsd-kind-icon">applicator<wbr>Properties</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="modules.html#applicatorValidators" class="tsd-kind-icon">applicator<wbr>Validators</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="modules.html#contentProperties" class="tsd-kind-icon">content<wbr>Properties</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="modules.html#coreContextTransformers" class="tsd-kind-icon">core<wbr>Context<wbr>Transformers</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="modules.html#coreProperties" class="tsd-kind-icon">core<wbr>Properties</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="modules.html#coreValidators" class="tsd-kind-icon">core<wbr>Validators</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="modules.html#defaults" class="tsd-kind-icon">defaults</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="modules.html#formatAnnotationProperties" class="tsd-kind-icon">format<wbr>Annotation<wbr>Properties</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="modules.html#formatAnnotationValidators" class="tsd-kind-icon">format<wbr>Annotation<wbr>Validators</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="modules.html#jsTypeMap" class="tsd-kind-icon">js<wbr>Type<wbr>Map</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="modules.html#jsTypes" class="tsd-kind-icon">js<wbr>Types</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="modules.html#metaDataProperties" class="tsd-kind-icon">meta<wbr>Data<wbr>Properties</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="modules.html#schemaStandards" class="tsd-kind-icon">schema<wbr>Standards</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="modules.html#standardFormatValidators" class="tsd-kind-icon">standard<wbr>Format<wbr>Validators</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="modules.html#standardValidators" class="tsd-kind-icon">standard<wbr>Validators</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="modules.html#unevaluatedProperties" class="tsd-kind-icon">unevaluated<wbr>Properties</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="modules.html#unevaluatedValidators" class="tsd-kind-icon">unevaluated<wbr>Validators</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="modules.html#validationProperties" class="tsd-kind-icon">validation<wbr>Properties</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="modules.html#validationValidators" class="tsd-kind-icon">validation<wbr>Validators</a>
+					</li>
+					<li class=" tsd-kind-function tsd-has-type-parameter">
+						<a href="modules.html#allOf" class="tsd-kind-icon">all<wbr>Of</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="modules.html#any" class="tsd-kind-icon">any</a>
+					</li>
+					<li class=" tsd-kind-function tsd-has-type-parameter">
+						<a href="modules.html#anyOf" class="tsd-kind-icon">any<wbr>Of</a>
+					</li>
+					<li class=" tsd-kind-function tsd-has-type-parameter">
+						<a href="modules.html#array" class="tsd-kind-icon">array</a>
+					</li>
+					<li class=" tsd-kind-function tsd-has-type-parameter">
+						<a href="modules.html#boolean" class="tsd-kind-icon">boolean</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="modules.html#combineOutputs" class="tsd-kind-icon">combine<wbr>Outputs</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="modules.html#createContext" class="tsd-kind-icon">create<wbr>Context</a>
+					</li>
+					<li class=" tsd-kind-function tsd-has-type-parameter">
+						<a href="modules.html#def" class="tsd-kind-icon">def</a>
+					</li>
+					<li class=" tsd-kind-function tsd-has-type-parameter">
+						<a href="modules.html#defUri" class="tsd-kind-icon">def<wbr>Uri</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="modules.html#dropUriFragment" class="tsd-kind-icon">drop<wbr>Uri<wbr>Fragment</a>
+					</li>
+					<li class=" tsd-kind-function tsd-has-type-parameter">
+						<a href="modules.html#dynamicRef" class="tsd-kind-icon">dynamic<wbr>Ref</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="modules.html#enterBoth" class="tsd-kind-icon">enter<wbr>Both</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="modules.html#enterInstance" class="tsd-kind-icon">enter<wbr>Instance</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="modules.html#enterKeyword" class="tsd-kind-icon">enter<wbr>Keyword</a>
+					</li>
+					<li class=" tsd-kind-function tsd-has-type-parameter">
+						<a href="modules.html#externalDef" class="tsd-kind-icon">external<wbr>Def</a>
+					</li>
+					<li class=" tsd-kind-function tsd-has-type-parameter">
+						<a href="modules.html#externalDefUri" class="tsd-kind-icon">external<wbr>Def<wbr>Uri</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="modules.html#getEvaluatedLength" class="tsd-kind-icon">get<wbr>Evaluated<wbr>Length</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="modules.html#getEvaluatedProperties" class="tsd-kind-icon">get<wbr>Evaluated<wbr>Properties</a>
+					</li>
+					<li class=" tsd-kind-function tsd-has-type-parameter">
+						<a href="modules.html#ifThen" class="tsd-kind-icon">if<wbr>Then</a>
+					</li>
+					<li class=" tsd-kind-function tsd-has-type-parameter">
+						<a href="modules.html#ifThenElse" class="tsd-kind-icon">if<wbr>Then<wbr>Else</a>
+					</li>
+					<li class=" tsd-kind-function tsd-has-type-parameter">
+						<a href="modules.html#integer" class="tsd-kind-icon">integer</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="modules.html#invalidOutput" class="tsd-kind-icon">invalid<wbr>Output</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="modules.html#isAnchor" class="tsd-kind-icon">is<wbr>Anchor</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="modules.html#isDynamicAnchor" class="tsd-kind-icon">is<wbr>Dynamic<wbr>Anchor</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="modules.html#isDynamicRef" class="tsd-kind-icon">is<wbr>Dynamic<wbr>Ref</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="modules.html#isRecursiveAnchor" class="tsd-kind-icon">is<wbr>Recursive<wbr>Anchor</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="modules.html#isRecursiveRef" class="tsd-kind-icon">is<wbr>Recursive<wbr>Ref</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="modules.html#isRef" class="tsd-kind-icon">is<wbr>Ref</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="modules.html#isSchema" class="tsd-kind-icon">is<wbr>Schema</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="modules.html#jsonError" class="tsd-kind-icon">json<wbr>Error</a>
+					</li>
+					<li class=" tsd-kind-function tsd-has-type-parameter">
+						<a href="modules.html#not" class="tsd-kind-icon">not</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="modules.html#nothing" class="tsd-kind-icon">nothing</a>
+					</li>
+					<li class=" tsd-kind-function tsd-has-type-parameter">
+						<a href="modules.html#nullable" class="tsd-kind-icon">nullable</a>
+					</li>
+					<li class=" tsd-kind-function tsd-has-type-parameter">
+						<a href="modules.html#number" class="tsd-kind-icon">number</a>
+					</li>
+					<li class=" tsd-kind-function tsd-has-type-parameter">
+						<a href="modules.html#object" class="tsd-kind-icon">object</a>
+					</li>
+					<li class=" tsd-kind-function tsd-has-type-parameter">
+						<a href="modules.html#oneOf" class="tsd-kind-icon">one<wbr>Of</a>
+					</li>
+					<li class=" tsd-kind-function tsd-has-type-parameter">
+						<a href="modules.html#recursiveRef" class="tsd-kind-icon">recursive<wbr>Ref</a>
+					</li>
+					<li class=" tsd-kind-function tsd-has-type-parameter">
+						<a href="modules.html#ref" class="tsd-kind-icon">ref</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="modules.html#registerSchema" class="tsd-kind-icon">register<wbr>Schema</a>
+					</li>
+					<li class=" tsd-kind-function tsd-has-type-parameter">
+						<a href="modules.html#schema" class="tsd-kind-icon">schema</a>
+					</li>
+					<li class=" tsd-kind-function tsd-has-type-parameter">
+						<a href="modules.html#schemaNull" class="tsd-kind-icon">schema<wbr>Null</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="modules.html#setBaseUri" class="tsd-kind-icon">set<wbr>Base<wbr>Uri</a>
+					</li>
+					<li class=" tsd-kind-function tsd-has-type-parameter">
+						<a href="modules.html#string" class="tsd-kind-icon">string</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="modules.html#toBasicOutput" class="tsd-kind-icon">to<wbr>Basic<wbr>Output</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="modules.html#toDetailedOutput" class="tsd-kind-icon">to<wbr>Detailed<wbr>Output</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="modules.html#toFlagOutput" class="tsd-kind-icon">to<wbr>Flag<wbr>Output</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="modules.html#validOutput" class="tsd-kind-icon">valid<wbr>Output</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="modules.html#validateBasic" class="tsd-kind-icon">validate<wbr>Basic</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="modules.html#validateDetailed" class="tsd-kind-icon">validate<wbr>Detailed</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="modules.html#validateFlag" class="tsd-kind-icon">validate<wbr>Flag</a>
+					</li>
+					<li class=" tsd-kind-function tsd-has-type-parameter">
+						<a href="modules.html#validateVerbose" class="tsd-kind-icon">validate<wbr>Verbose</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="modules.html#validateWithContext" class="tsd-kind-icon">validate<wbr>With<wbr>Context</a>
+					</li>
+				</ul>
+			</nav>
+		</div>
+	</div>
+</div>
+<footer>
+	<div class="container">
+		<h2>Legend</h2>
+		<div class="tsd-legend-group">
+		</div>
+	</div>
+</footer>
+<div class="overlay"></div>
+<script src="assets/js/main.js"></script>
+</body>
+</html>
