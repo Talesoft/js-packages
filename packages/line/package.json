@@ -1,6 +1,6 @@
 {
   "name": "@talesoft/line",
-  "version": "0.1.0",
+  "version": "0.1.1-alpha.0",
   "license": "MIT",
   "main": "cjs/index.js",
   "types": "esm/index.d.ts",
@@ -12,7 +12,7 @@
     "lint:fix": "eslint \"src/**/*.ts\" --fix"
   },
   "dependencies": {
-    "@talesoft/vector2": "^0.1.0"
+    "@talesoft/vector2": "^0.1.1-alpha.0"
   },
   "devDependencies": {
     "@types/jest": "^26.0.20",

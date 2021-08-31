@@ -1,6 +1,6 @@
 {
     "name": "@talesoft/color",
-    "version": "0.1.3",
+    "version": "0.1.4",
     "license": "MIT",
     "main": "cjs/index.js",
     "types": "esm/index.d.ts",

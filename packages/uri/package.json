@@ -1,6 +1,6 @@
 {
   "name": "@talesoft/uri",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "license": "MIT",
   "main": "cjs/index.js",
   "types": "esm/index.d.ts",
