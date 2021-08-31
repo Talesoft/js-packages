@@ -27,10 +27,10 @@ describe('coreValidators', () => {
       [
         'ref with id - valid',
         {
-          $id: 'test',
+          $id: 'https://example.com/schema.json#',
           $defs: { test: { type: 'string' } },
           type: 'object',
-          properties: { a: { $ref: 'test/$defs/test' } },
+          properties: { a: { $ref: 'https://example.com/schema.json#/$defs/test' } },
         },
         [{ a: 'test' }],
         { valid: true },
@@ -38,43 +38,16 @@ describe('coreValidators', () => {
       [
         'ref with id - invalid',
         {
-          $id: 'test',
+          $id: 'https://example.com/schema.json#',
           $defs: { test: { type: 'string' } },
           type: 'object',
-          properties: { a: { $ref: 'test/$defs/test' } },
+          properties: { a: { $ref: 'https://example.com/schema.json#/$defs/test' } },
         },
         [{ a: 123 }],
         { valid: true },
       ],
-      [
-        'ref with local id - valid',
-        {
-          $id: 'test',
-          $defs: { test: { type: 'string' } },
-          type: 'object',
-          properties: { a: { $ref: '#/$defs/test' } },
-        },
-        [{ a: 'test' }],
-        { valid: true },
-      ],
-      [
-        'ref with local id - invalid',
-        {
-          $id: 'test',
-          $defs: { test: { type: 'string' } },
-          type: 'object',
-          properties: { a: { $ref: '#/$defs/test' } },
-        },
-        [{ a: 123 }],
-        { valid: true },
-      ],
-      ,
     ]).it('should correctly resolve schemas (%s)', (_, schema, values, expected) => {
-      return Promise.allSettled(
-        values.map((value: unknown) =>
-          validateFlag(schema, value).then(result => expect(result).toEqual(expected)),
-        ),
-      )
+      values.forEach((value: unknown) => expect(validateFlag(schema, value)).toEqual(expected))
     })
   })
 })

@@ -1,0 +1,5 @@
+export type { ObservedVector2, ReadonlyVector2, Vector2, Vector2Tuple } from './vector2'
+export * from './constants'
+export * from './factories'
+export * from './operations'
+export * from './predicates'

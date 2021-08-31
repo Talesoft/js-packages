@@ -1,12 +1,21 @@
 import type { RegexString } from './common'
 import type { Schema } from './schema'
 
+/**
+ * @category JSON-Schema Utility
+ */
 export type Items<Value = unknown> = Value extends Array<infer Item> ? Schema<Item> : Schema
 
+/**
+ * @category JSON-Schema Utility
+ */
 export type Properties<Value = unknown> = Value extends Record<string, unknown>
   ? { [Key in keyof Value]: Schema<Value[Key]> }
   : Record<string, Schema>
 
+/**
+ * @category JSON-Schema Property
+ */
 export type ApplicatorProperties<Value = unknown> = {
   readonly prefixItems?: ReadonlyArray<Schema<Value>>
   readonly items?: Items<Value>
@@ -25,6 +34,9 @@ export type ApplicatorProperties<Value = unknown> = {
   readonly not?: Schema<Value>
 }
 
+/**
+ * @category JSON-Schema Utility
+ */
 export const applicatorProperties: ReadonlyArray<keyof ApplicatorProperties> = [
   'prefixItems',
   'items',

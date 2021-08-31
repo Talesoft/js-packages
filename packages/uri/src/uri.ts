@@ -1,8 +1,3 @@
-import type { Result } from '@talesoft/result'
-import type { Option } from '@talesoft/option'
-import type { URIComponents } from 'uri-js'
-import { fromFallible } from '@talesoft/result'
-import { fromFalsible } from '@talesoft/option'
 import {
   parse as parseUri,
   serialize as serializeUri,
@@ -14,16 +9,16 @@ import { toInteger } from '@talesoft/types'
 export type Uri = string
 
 export type UriComponents = {
-  scheme: Option<string>
-  userInfo: Option<string>
-  host: Option<string>
-  port: Option<number>
-  path: Option<string>
-  query: Option<string>
-  fragment: Option<string>
+  readonly scheme: string | null
+  readonly userInfo: string | null
+  readonly host: string | null
+  readonly port: number | null
+  readonly path: string | null
+  readonly query: string | null
+  readonly fragment: string | null
 }
 
-const id = (value: URIComponents) => value
+const id = <Value>(value: Value): Value => value
 const schemeHandler = (scheme: string) => ({ scheme, parse: id, serialize: id })
 const overwrittenSchemes = ['mailto', 'urn', 'ws', 'wss']
 const schemeHandlers = Object.fromEntries(
@@ -33,46 +28,44 @@ const originalSchemeHandlers = Object.fromEntries(
   overwrittenSchemes.map(scheme => [scheme, SCHEMES[scheme]]),
 )
 
-export function parse(uri: Uri): Result<UriComponents, Error> {
-  return fromFallible(() => {
-    // We overwrite some scheme parsing behavior in url-js (we don't want it, actually. Let this function be as predicatable as possible.)
-    Object.assign(SCHEMES, schemeHandlers)
-    const { scheme, userinfo, host, port, path, query, fragment, error } = parseUri(uri)
-    // Assign the old behavior to url-js to not interfer with other instances using url-js directly
-    Object.assign(SCHEMES, originalSchemeHandlers)
+export const parse = (uri: Uri): UriComponents => {
+  // We overwrite some scheme parsing behavior in url-js (we don't want it, actually. Let this function be as predicatable as possible.)
+  Object.assign(SCHEMES, schemeHandlers)
+  const { scheme, userinfo, host, port, path, query, fragment, error } = parseUri(uri)
+  // Assign the old behavior to url-js to not interfer with other instances using url-js directly
+  Object.assign(SCHEMES, originalSchemeHandlers)
 
-    if (error) {
-      throw new Error(error)
-    }
+  if (error) {
+    throw new Error(error)
+  }
 
-    return {
-      scheme: fromFalsible(scheme),
-      userInfo: fromFalsible(userinfo),
-      host: fromFalsible(host),
-      port: fromFalsible(port).map(toInteger),
-      path: fromFalsible(path),
-      query: fromFalsible(query),
-      fragment: fromFalsible(fragment),
-    }
-  })
+  return {
+    scheme: scheme || null,
+    userInfo: userinfo || null,
+    host: host || null,
+    port: port ? toInteger(port) : null,
+    path: path || null,
+    query: query || null,
+    fragment: fragment || null,
+  }
 }
 
-export function stringify(uriComponents: UriComponents): string {
+export const stringify = (uriComponents: UriComponents): string => {
   Object.assign(SCHEMES, schemeHandlers)
   const uri = serializeUri({
-    scheme: uriComponents.scheme.orUndefined,
-    userinfo: uriComponents.userInfo.orUndefined,
-    host: uriComponents.host.orUndefined,
-    port: uriComponents.port.orUndefined,
-    path: uriComponents.path.orUndefined,
-    query: uriComponents.query.orUndefined,
-    fragment: uriComponents.fragment.orUndefined,
+    scheme: uriComponents.scheme ?? undefined,
+    userinfo: uriComponents.userInfo ?? undefined,
+    host: uriComponents.host ?? undefined,
+    port: uriComponents.port ?? undefined,
+    path: uriComponents.path ?? undefined,
+    query: uriComponents.query ?? undefined,
+    fragment: uriComponents.fragment ?? undefined,
   })
   Object.assign(SCHEMES, originalSchemeHandlers)
   return uri
 }
 
-export function resolve(uri: Uri, relativeUri: Uri): Uri {
+export const resolve = (uri: Uri, relativeUri: Uri): string => {
   Object.assign(SCHEMES, schemeHandlers)
   const result = resolveUri(uri, relativeUri)
   Object.assign(SCHEMES, originalSchemeHandlers)

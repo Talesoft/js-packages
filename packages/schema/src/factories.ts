@@ -22,207 +22,281 @@ import type {
 import type { UriReferenceString } from './standard/meta/common'
 import type { Schema, SchemaObject } from './standard/meta/schema'
 import { schemaStandards } from './common'
+import type { Uri } from '../../uri/esm'
+import type { Items, Properties } from './standard/meta/applicator'
 
-export function allOf<SchemaTypes extends Schema[]>(
+/**
+ * Creates a `allOf` JSON-Schema.
+ *
+ * An `allOf` schema means the value has to match *all* of the specified schemas.
+ *
+ * @category Factory Composition
+ *
+ * @param schemas The schemas the value has to match.
+ * @returns The `allOf` JSON-Schema
+ */
+export const allOf = <SchemaTypes extends Schema[]>(
   ...schemas: SchemaTypes
-): AllOfSchema<SchemaTypes> {
-  return { allOf: schemas }
-}
+): AllOfSchema<SchemaTypes> => ({ allOf: schemas })
 
-export function anyOf<SchemaTypes extends Schema[]>(
+/**
+ * Creates a `anyOf` JSON-Schema.
+ *
+ * An `anyOf` schema means the value has to match *any* of the specified schemas.
+ * It needs to match at least one of them to be valid at all.
+ *
+ * @category Factory Composition
+ *
+ * @param schemas The schemas the value has to match.
+ * @returns The `anyOf` JSON-Schema
+ */
+export const anyOf = <SchemaTypes extends Schema[]>(
   ...schemas: SchemaTypes
-): AnyOfSchema<SchemaTypes> {
-  return { anyOf: schemas }
-}
+): AnyOfSchema<SchemaTypes> => ({ anyOf: schemas })
 
-export function oneOf<SchemaTypes extends Schema[]>(
+/**
+ * Creates a `oneOf` JSON-Schema.
+ *
+ * A `oneOf` schema means the value has to match *exactly one* of the specified schemas.
+ *
+ * @category Factory Composition
+ *
+ * @param schemas The schemas the value has to match.
+ * @returns the `oneOf` JSON-Schema
+ */
+export const oneOf = <SchemaTypes extends Schema[]>(
   ...schemas: SchemaTypes
-): OneOfSchema<SchemaTypes> {
-  return { oneOf: schemas }
-}
+): OneOfSchema<SchemaTypes> => ({ oneOf: schemas })
 
-export function not<SchemaType extends Schema>(schema: SchemaType): NotSchema<SchemaType> {
-  return { not: schema }
-}
+export const not = <SchemaType extends Schema[]>(schema: SchemaType): NotSchema<SchemaType> => ({
+  not: schema,
+})
 
-export function ifThen<IfSchemaType extends Schema, ThenSchemaType extends Schema>(
+/**
+ * @category Factory Composition
+ */
+export const ifThen = <IfSchemaType extends Schema[], ThenSchemaType extends Schema[]>(
   ifSchema: IfSchemaType,
   thenSchema: ThenSchemaType,
-): IfThenSchema<IfSchemaType, ThenSchemaType> {
-  return { if: ifSchema, then: thenSchema }
-}
+): IfThenSchema<IfSchemaType, ThenSchemaType> => ({
+  if: ifSchema,
+  then: thenSchema,
+})
 
-export function ifThenElse<
-  IfSchemaType extends Schema,
-  ThenSchemaType extends Schema,
-  ElseSchemaType extends Schema,
+/**
+ * @category Factory Composition
+ */
+export const ifThenElse = <
+  IfSchemaType extends Schema[],
+  ThenSchemaType extends Schema[],
+  ElseSchemaType extends Schema[],
 >(
   ifSchema: IfSchemaType,
   thenSchema: ThenSchemaType,
   elseSchema: ElseSchemaType,
-): IfThenElseSchema<IfSchemaType, ThenSchemaType, ElseSchemaType> {
-  return { if: ifSchema, then: thenSchema, else: elseSchema }
-}
+): IfThenElseSchema<IfSchemaType, ThenSchemaType, ElseSchemaType> => ({
+  if: ifSchema,
+  then: thenSchema,
+  else: elseSchema,
+})
 
-export function any(): AnySchema {
-  return true
-}
+/**
+ * @category Factory
+ */
+export const any = (): AnySchema => true
 
-export function nothing(): NothingSchema {
-  return false
-}
+/**
+ * @category Factory
+ */
+export const nothing = (): NothingSchema => false
 
-export function ref<Uri extends UriReferenceString>(uri: Uri): Reference<Uri> {
-  return { $ref: uri }
-}
+/**
+ * @category Factory Utility
+ */
+export const ref = <Uri extends UriReferenceString>(uri: Uri): Reference<Uri> => ({ $ref: uri })
 
-export function recursiveRef<Uri extends UriReferenceString>(uri: Uri): RecursiveReference<Uri> {
-  return { $recursiveRef: uri }
-}
+/**
+ * @category Factory Utility
+ */
+export const recursiveRef = <Uri extends UriReferenceString>(
+  uri: Uri,
+): RecursiveReference<Uri> => ({ $recursiveRef: uri })
 
-export function dynamicRef<Uri extends UriReferenceString>(uri: Uri): DynamicReference<Uri> {
-  return { $dynamicRef: uri }
-}
+/**
+ * @category Factory Utility
+ */
+export const dynamicRef = <Uri extends UriReferenceString>(uri: Uri): DynamicReference<Uri> => ({
+  $dynamicRef: uri,
+})
 
-export function localDefinitionUri<DefinitionName extends string>(
+/**
+ * @category Factory Utility
+ */
+export const defUri = <DefinitionName extends string>(
   definitionName: DefinitionName,
-): `#/$defs/${DefinitionName}` {
-  return `#/$defs/${definitionName}` as const
-}
+): `#/$defs/${DefinitionName}` => `#/$defs/${definitionName}`
 
-export function localDefinitionRef<DefinitionName extends string>(
+/**
+ * @category Factory Utility
+ */
+export const def = <DefinitionName extends string>(
   definitionName: DefinitionName,
-): Reference<`#/$defs/${DefinitionName}`> {
-  return ref(localDefinitionUri(definitionName))
-}
+): Reference<`#/$defs/${DefinitionName}`> => ref(defUri(definitionName))
 
-export function localRootIri(): '#' {
-  return '#'
-}
+/**
+ * @category Factory Utility
+ */
+export const externalDefUri = <DefinitionName extends string, SchemaId extends Uri>(
+  schemaId: SchemaId,
+  definitionName: DefinitionName,
+): `${SchemaId}#/$defs/${DefinitionName}` => `${schemaId}#/$defs/${definitionName}`
 
-export function localRootRef(): Reference<'#'> {
-  return ref(localRootIri())
-}
+/**
+ * @category Factory Utility
+ */
+export const externalDef = <DefinitionName extends string, SchemaId extends Uri>(
+  schemaId: SchemaId,
+  definitionName: DefinitionName,
+): Reference<`${SchemaId}#/$defs/${DefinitionName}`> =>
+  ref(externalDefUri(schemaId, definitionName))
 
-export function schemaNull(): NullTypeSchema
-export function schemaNull<SchemaType extends SchemaObject>(
-  options: SchemaType,
-): Readonly<SchemaType> & NullTypeSchema
-export function schemaNull<SchemaType extends SchemaObject>(
-  options?: SchemaType,
-): NullTypeSchema | (Readonly<SchemaType> & NullTypeSchema) {
-  return {
-    ...options,
-    type: 'null',
-  }
-}
+/**
+ * @category Factory Type
+ */
+export const schemaNull: {
+  (): NullTypeSchema
+  <SchemaType extends SchemaObject>(options: SchemaType): Readonly<SchemaType> & NullTypeSchema
+} = <SchemaType extends SchemaObject>(options?: SchemaType): NullTypeSchema => ({
+  ...options,
+  type: 'null',
+})
 
-export function nullable<SchemaType extends Schema>(
+/**
+ * @category Factory Type
+ */
+export const nullable = <SchemaType extends SchemaObject>(
   schema: SchemaType,
-): OneOfSchema<[SchemaType, NullTypeSchema]> {
-  return oneOf(schema, schemaNull())
-}
+): OneOfSchema<[SchemaType, NullTypeSchema]> => oneOf(schema, schemaNull())
 
-export function boolean(): BooleanTypeSchema
-export function boolean<SchemaType extends SchemaObject>(
-  options: SchemaType,
-): Readonly<SchemaType> & BooleanTypeSchema
-export function boolean<SchemaType extends SchemaObject>(
+/**
+ * @category Factory Type
+ */
+export const boolean: {
+  (): BooleanTypeSchema
+  <SchemaType extends SchemaObject>(options: SchemaType): Readonly<SchemaType> & BooleanTypeSchema
+} = <SchemaType extends SchemaObject>(options?: SchemaType): BooleanTypeSchema => ({
+  ...options,
+  type: 'boolean',
+})
+
+/**
+ * @category Factory Type
+ */
+export const string: {
+  (): StringTypeSchema
+  <SchemaType extends SchemaObject>(options: SchemaType): Readonly<SchemaType> & StringTypeSchema
+} = <SchemaType extends SchemaObject>(options?: SchemaType): StringTypeSchema => ({
+  ...options,
+  type: 'string',
+})
+
+/**
+ * @category Factory Type
+ */
+export const number: {
+  (): NumberTypeSchema
+  <SchemaType extends SchemaObject>(options: SchemaType): Readonly<SchemaType> & NumberTypeSchema
+} = <SchemaType extends SchemaObject>(options?: SchemaType): NumberTypeSchema => ({
+  ...options,
+  type: 'number',
+})
+
+/**
+ * @category Factory Type
+ */
+export const integer: {
+  (): IntegerTypeSchema
+  <SchemaType extends SchemaObject>(options: SchemaType): Readonly<SchemaType> & IntegerTypeSchema
+} = <SchemaType extends SchemaObject>(options?: SchemaType): IntegerTypeSchema => ({
+  ...options,
+  type: 'integer',
+})
+
+/**
+ * @category Factory Type
+ */
+export const array: {
+  (): ArrayTypeSchema
+  <SchemaType extends SchemaObject>(options: SchemaType): Readonly<SchemaType> & ArrayTypeSchema
+} = <SchemaType extends SchemaObject>(options?: SchemaType): ArrayTypeSchema => ({
+  ...options,
+  type: 'array',
+})
+
+/**
+ * @category Factory Type
+ */
+export const arrayOf: {
+  <Value>(items: Items<Value>): { items: Items<Value> } & ArrayTypeSchema
+  <Value, SchemaType extends SchemaObject>(
+    items: Items<Value>,
+    options: SchemaType,
+  ): Readonly<SchemaType> & { items: Items<Value> } & ArrayTypeSchema
+} = <Value, SchemaType extends SchemaObject>(
+  items: Items<Value>,
   options?: SchemaType,
-): BooleanTypeSchema | (Readonly<SchemaType> & BooleanTypeSchema) {
-  return {
-    ...options,
-    type: 'boolean',
-  }
-}
+): { items: Items<Value> } & ArrayTypeSchema => ({
+  ...options,
+  items,
+  type: 'array',
+})
 
-export function string(): StringTypeSchema
-export function string<SchemaType extends SchemaObject>(
-  options: SchemaType,
-): Readonly<SchemaType> & StringTypeSchema
-export function string<SchemaType extends SchemaObject>(
+/**
+ * @category Factory Type
+ */
+export const object: {
+  (): ObjectTypeSchema
+  <SchemaType extends SchemaObject>(options: SchemaType): Readonly<SchemaType> & ObjectTypeSchema
+} = <SchemaType extends SchemaObject>(options?: SchemaType): ObjectTypeSchema => ({
+  ...options,
+  type: 'object',
+})
+
+/**
+ * @category Factory Type
+ */
+export const objectOf: {
+  <Value>(properties: Properties<Value>): { properties: Properties<Value> } & ObjectTypeSchema
+  <Value, SchemaType extends SchemaObject>(
+    properties: Properties<Value>,
+    options: SchemaType,
+  ): Readonly<SchemaType> & { properties: Properties<Value> } & ObjectTypeSchema
+} = <Value, SchemaType extends SchemaObject>(
+  properties: Properties<Value>,
   options?: SchemaType,
-): StringTypeSchema | (Readonly<SchemaType> & StringTypeSchema) {
-  return {
-    ...options,
-    type: 'string',
-  }
-}
+): { properties: Properties<Value> } & ObjectTypeSchema => ({
+  ...options,
+  properties,
+  type: 'object',
+})
 
-export function number(): NumberTypeSchema
-export function number<SchemaType extends SchemaObject>(
-  options: SchemaObject,
-): Readonly<SchemaType> & NumberTypeSchema
-export function number<SchemaType extends SchemaObject>(
-  options?: SchemaType,
-): NumberTypeSchema | (Readonly<SchemaType> & NumberTypeSchema) {
-  return {
-    ...options,
-    type: 'number',
+/**
+ * @category Factory
+ */
+export const schema: {
+  <Id extends string>(id: Id): { $schema: LatestSchemaStandard; $id: Id }
+  <Id extends string, SchemaType extends SchemaObject>(
+    id: Id,
+    options: SchemaType,
+  ): Readonly<SchemaType> & {
+    $schema: LatestSchemaStandard
+    $id: Id
   }
-}
-
-export function integer(): IntegerTypeSchema
-export function integer<SchemaType extends SchemaObject>(
-  options: SchemaType,
-): Readonly<SchemaType> & IntegerTypeSchema
-export function integer<SchemaType extends SchemaObject>(
-  options?: SchemaType,
-): IntegerTypeSchema | (Readonly<SchemaType> & IntegerTypeSchema) {
-  return {
-    ...options,
-    type: 'integer',
-  }
-}
-
-export function array(): ArrayTypeSchema
-export function array<SchemaType extends SchemaObject>(
-  options: SchemaType,
-): Readonly<SchemaType> & ArrayTypeSchema
-export function array<SchemaType extends SchemaObject>(
-  options?: SchemaType,
-): ArrayTypeSchema | (Readonly<SchemaType> & ArrayTypeSchema) {
-  return {
-    ...options,
-    type: 'array',
-  }
-}
-
-export function object(): ObjectTypeSchema
-export function object<SchemaType extends SchemaObject>(
-  options: SchemaType,
-): Readonly<SchemaType> & ObjectTypeSchema
-export function object<SchemaType extends SchemaObject>(
-  options?: SchemaType,
-): ObjectTypeSchema | (Readonly<SchemaType> & ObjectTypeSchema) {
-  return {
-    ...options,
-    type: 'object',
-  }
-}
-
-export function schema<Id extends string>(id: Id): { $schema: LatestSchemaStandard; $id: Id }
-export function schema<Id extends string, SchemaType extends SchemaObject>(
+} = <Id extends string, SchemaType extends SchemaObject>(
   id: Id,
-  options: SchemaType,
-): Readonly<SchemaType> & { $schema: LatestSchemaStandard; $id: Id }
-export function schema<Id extends string, SchemaType extends SchemaObject>(
-  id: Id,
   options?: SchemaType,
-):
-  | { $schema: LatestSchemaStandard; $id: Id }
-  | (Readonly<SchemaType> & { $schema: LatestSchemaStandard; $id: Id }) {
-  return {
-    ...options,
-    $schema: schemaStandards.latest,
-    $id: id,
-  }
-}
-
-export type ValueCreationType = 'default' | 'example'
-
-export type ValueCreationExamples = {
-  readonly text: string
-  readonly longText: string
-  readonly formats: Record<string, string>
-}
+): { $schema: LatestSchemaStandard; $id: Id } => ({
+  ...options,
+  $schema: schemaStandards.latest,
+  $id: id,
+})

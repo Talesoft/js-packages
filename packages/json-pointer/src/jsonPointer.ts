@@ -1,5 +1,3 @@
-import type { Option } from '@talesoft/option'
-import { some, none } from '@talesoft/option'
 import { isObject, isArray, isNumeric, toInteger } from '@talesoft/types'
 
 // json-pointer    = *( "/" reference-token )
@@ -22,19 +20,24 @@ import { isObject, isArray, isNumeric, toInteger } from '@talesoft/types'
 //     : never
 //   : never
 
-export function resolve<ResolvedValue>(pointer: string, value: unknown): Option<ResolvedValue> {
+export type JsonPointer = string
+
+export const resolve = <ResolvedValue>(
+  pointer: JsonPointer,
+  value: unknown,
+): ResolvedValue | null => {
   if (pointer === '') {
-    return some(value as ResolvedValue)
+    return value as ResolvedValue
   }
 
   if (!pointer.startsWith('/')) {
-    return none
+    return null
   }
 
   const [key, subPath] = pointer.slice(1).split('/', 2)
 
   if (!key) {
-    return none
+    return null
   }
 
   const normalizedKey = key.replace(/~1/g, '/').replace(/~0/g, '~')
@@ -42,25 +45,25 @@ export function resolve<ResolvedValue>(pointer: string, value: unknown): Option<
   if (isNumeric(normalizedKey) && isArray(value)) {
     const index = toInteger(normalizedKey)
     if (index >= value.length) {
-      return none
+      return null
     }
     const itemValue = value[index] as ResolvedValue
     if (subPath) {
       return resolve(`/${subPath}`, itemValue)
     }
-    return some(itemValue)
+    return itemValue
   }
 
   if (normalizedKey && isObject(value)) {
     if (!(normalizedKey in value)) {
-      return none
+      return null
     }
     const itemValue = value[normalizedKey] as ResolvedValue
     if (subPath) {
       return resolve(`/${subPath}`, itemValue)
     }
-    return some(itemValue)
+    return itemValue
   }
 
-  return none
+  return null
 }

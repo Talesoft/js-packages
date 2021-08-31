@@ -1,24 +1,32 @@
-import type { ContextTransformer, Validator } from '../validation'
+import type { Validator } from '../validation'
+import type { Schema } from '../standard/meta/schema'
+import type { ContextTransformer, Context } from '../contexts'
+import { setBaseUri } from '../contexts'
 import { validateWithContext } from '../validation'
-import { enterKeyword } from '../validation'
-import { invalidOutput } from '../validation'
-import { isAnchor, isDynamicAnchor, isRecursiveAnchor, isRef, isSchema } from '../common'
+import { dropUriFragment, isAnchor, isRef } from '../common'
 import { isBoolean, isString } from '@talesoft/types'
-import { none, some } from '@talesoft/option'
 import { parse } from '@talesoft/uri'
-import { resolve } from '@talesoft/json-pointer'
+import { resolve as resolvePointer } from '@talesoft/json-pointer'
+import { resolve as resolveUri } from '@talesoft/uri'
+import { enterKeyword } from '../contexts'
+import { invalidOutput } from '../outputs'
 
+/**
+ * @category Context Transformer Core
+ */
 export const coreContextTransformers: Record<string, ContextTransformer> = {
   $id: (schema, context) => {
     if (isBoolean(schema) || !isString(schema.$id)) {
       return context
     }
+    // Dynamic schema registration during validation
+    const newBaseUri = dropUriFragment(resolveUri(context.baseUri, schema.$id))
     return {
       ...context,
-      currentSchemaId: schema.$id,
-      loadedSchemas: {
-        ...context.loadedSchemas,
-        [schema.$id]: schema,
+      baseUri: newBaseUri,
+      schemas: {
+        ...context.schemas,
+        [newBaseUri]: schema,
       },
     }
   },
@@ -26,125 +34,94 @@ export const coreContextTransformers: Record<string, ContextTransformer> = {
     if (!isAnchor(schema)) {
       return context
     }
+    const fullUri = resolveUri(context.baseUri, `#${schema.$anchor}`)
     return {
       ...context,
       anchors: {
         ...context.anchors,
-        [`${context.currentSchemaId}/${schema.$anchor}`]: schema,
-      },
-    }
-  },
-  $dynamicAnchor: (schema, context) => {
-    if (!isRecursiveAnchor(schema) && !isDynamicAnchor(schema)) {
-      return context
-    }
-    const dynamicAnchor = isRecursiveAnchor(schema)
-      ? schema.$recursiveAnchor
-      : schema.$dynamicAnchor
-    return {
-      ...context,
-      dynamicAnchors: {
-        ...context.dynamicAnchors,
-        [`${context.currentSchemaId}/${dynamicAnchor}`]: schema,
+        [fullUri]: schema,
       },
     }
   },
 }
 
+/**
+ * @category Validator Core
+ */
 export const coreValidators: Record<string, Validator> = {
   // Boolean schema validation (simply, true and false are valid schemas)
   // a "true" schema does not produce any output (It's the same as {}, so no validators kick in and it always stays valid)
   $: (schema, _, context) => {
     if (schema === false) {
-      return Promise.resolve(some(invalidOutput([], context.error`Must not be any value`, context)))
+      return invalidOutput([], context.error`Must not be any value`, context)
     }
 
-    return Promise.resolve(none)
+    return null
   },
 
   $ref: (schema, value, context) => {
     if (!isRef(schema)) {
-      return Promise.resolve(none)
+      return null
     }
 
     const localContext = enterKeyword('$ref', context)
-    const referencedSchemaId = schema.$ref.startsWith('#')
-      ? context.currentSchemaId
-      : Object.keys(context.loadedSchemas).find(id => schema.$ref.startsWith(id))
-    if (!referencedSchemaId || !context.loadedSchemas[referencedSchemaId]) {
-      // TODO: Try network resolve
-      return Promise.resolve(
-        some(
-          invalidOutput(
-            [],
-            localContext.error`Referenced schema of ref ${schema.$ref} was not found`,
-            localContext,
-          ),
-        ),
+    const fullUri = resolveUri(localContext.baseUri, schema.$ref)
+    // Check if we have an anchor that resolves to this value
+    const matchingAnchor = Object.keys(localContext.anchors).find(key => key === fullUri)
+    if (matchingAnchor) {
+      const anchorSchema = localContext.anchors[matchingAnchor]
+      return validateWithContext(anchorSchema, value, localContext)
+    }
+    const fragment = parse(fullUri).fragment
+    const uriWithoutFragment = dropUriFragment(fullUri, fragment)
+    // Search for a loaded schema that could contain this ref
+    const matchingLoadedSchemaKey = Object.keys(localContext.schemas).find(
+      key => key === uriWithoutFragment,
+    )
+    if (!isString(matchingLoadedSchemaKey)) {
+      return invalidOutput(
+        [],
+        localContext.error`Referenced schema of ref ${
+          schema.$ref
+        } (${uriWithoutFragment}) was not found.
+        Known schemas: ${Object.keys(localContext.schemas)}
+        Fragment: ${fragment}
+        URI without Fragment: ${uriWithoutFragment}`,
+        localContext,
       )
     }
 
-    const [fragment] = parse(schema.$ref).asArray.flatMap(({ fragment }) => fragment.asArray)
-
-    if (!fragment.startsWith('/')) {
-      // This is an anchor (hopefully defined through $anchor)
+    const crossContext: Context = {
+      ...setBaseUri(matchingLoadedSchemaKey, localContext),
+      absoluteKeywordLocation: '',
+    }
+    const loadedSchema = crossContext.schemas[matchingLoadedSchemaKey]
+    if (!fragment) {
+      return validateWithContext(loadedSchema, value, crossContext)
     }
 
-    const resolvedSchema = resolve(fragment, context.loadedSchemas[referencedSchemaId]).orUndefined
+    if (fragment.startsWith('/')) {
+      // This is a JSON-Pointer. We resolve it in the loaded schema
+      const resolvedSchema = resolvePointer<Schema>(fragment, loadedSchema)
 
-    if (!isSchema(resolvedSchema)) {
-      return Promise.resolve(
-        some(
-          invalidOutput(
-            [],
-            localContext.error`Value referenced at ${schema.$ref} is not a valid schema`,
-            localContext,
-          ),
-        ),
-      )
+      if (!resolvedSchema) {
+        return invalidOutput(
+          [],
+          localContext.error`Referenced sub-schema of ref ${schema.$ref} (${fullUri}) could not be resolved`,
+          localContext,
+        )
+      }
+
+      return validateWithContext(resolvedSchema, value, {
+        ...crossContext,
+        absoluteKeywordLocation: fragment,
+      })
     }
 
-    return validateWithContext(resolvedSchema, value, localContext).then(some)
-  },
-
-  $anchor: (schema, value, context) => {
-    // Notice for us, anchors all work the same as we're always resolving at runtime (right now)
-    if (isAnchor(schema)) {
-      const localContext = enterKeyword('$anchor', context)
-      return Promise.resolve(none)
-    }
-
-    const referencedSchemaId = schema.$ref.startsWith('#')
-      ? context.currentSchemaId
-      : Object.keys(context.loadedSchemas).find(id => schema.$ref.startsWith(id))
-    if (!referencedSchemaId || !context.loadedSchemas[referencedSchemaId]) {
-      // TODO: Try network resolve
-      return Promise.resolve(
-        some(
-          invalidOutput(
-            [],
-            localContext.error`Referenced schema of ref ${schema.$ref} was not found`,
-            localContext,
-          ),
-        ),
-      )
-    }
-
-    const [fragment] = parse(schema.$ref).asArray.flatMap(({ fragment }) => fragment.asArray)
-    const resolvedSchema = resolve(fragment, context.loadedSchemas[referencedSchemaId]).orUndefined
-
-    if (!isSchema(resolvedSchema)) {
-      return Promise.resolve(
-        some(
-          invalidOutput(
-            [],
-            localContext.error`Value referenced at ${schema.$ref} is not a valid schema`,
-            localContext,
-          ),
-        ),
-      )
-    }
-
-    return validateWithContext(resolvedSchema, value, localContext).then(some)
+    return invalidOutput(
+      [],
+      localContext.error`Referenced anchor of ref ${schema.$ref} (${fullUri}) could not be resolved`,
+      localContext,
+    )
   },
 }

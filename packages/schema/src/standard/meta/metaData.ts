@@ -1,3 +1,6 @@
+/**
+ * @category JSON-Schema Property
+ */
 export type MetaDataProperties<Value = unknown> = {
   readonly title?: string
   readonly description?: string
@@ -8,6 +11,9 @@ export type MetaDataProperties<Value = unknown> = {
   readonly examples?: ReadonlyArray<Value>
 }
 
+/**
+ * @category JSON-Schema Utility
+ */
 export const metaDataProperties = [
   'title',
   'description',

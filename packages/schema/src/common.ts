@@ -8,15 +8,35 @@ import type {
 } from './schemas'
 import type { SimpleType } from './standard/meta/validation'
 import type { Schema } from './standard/meta/schema'
-import { isBoolean, isObject } from '@talesoft/types'
+import type { Uri } from '@talesoft/uri'
+import { isArray, isBoolean, isObject } from '@talesoft/types'
+import { parse } from '@talesoft/uri'
 
+/**
+ * @category Utility
+ */
 export const schemaStandards = {
-  latest: 'https://json-schema.org/draft/2020-12/schema',
+  latest: 'http://json-schema.org/schema#',
+  hyper: 'http://json-schema.org/hyper-schema#',
+  draft04: 'http://json-schema.org/draft-04/schema#',
+  draft04Hyper: 'http://json-schema.org/draft-04/hyper-schema#',
+  draft03: 'http://json-schema.org/draft-03/schema#',
+  draft03Hyper: 'http://json-schema.org/draft-03/hyper-schema#',
 } as const
 
+/**
+ * @category Utility
+ */
 export type SchemaStandard = typeof schemaStandards[keyof typeof schemaStandards]
+
+/**
+ * @category Utility
+ */
 export type LatestSchemaStandard = typeof schemaStandards.latest
 
+/**
+ * @category Utility
+ */
 export const jsTypes = [
   'string',
   'number',
@@ -28,8 +48,15 @@ export const jsTypes = [
   'function',
 ] as const
 
+/**
+ * @category Utility
+ */
 export type JsType = typeof jsTypes[number]
 
+/**
+ * @category Utility
+ * @internal
+ */
 export const jsTypeMap: Record<JsType, SimpleType> = {
   string: 'string',
   number: 'number',
@@ -41,6 +68,9 @@ export const jsTypeMap: Record<JsType, SimpleType> = {
   function: 'object',
 }
 
+/**
+ * @category Utility
+ */
 export const defaults: Record<SimpleType, unknown> = {
   string: '',
   number: 0,
@@ -51,34 +81,91 @@ export const defaults: Record<SimpleType, unknown> = {
   object: {},
 }
 
-export function isSchema(value: unknown): value is Schema {
-  return isBoolean(value) || isObject(value)
+/**
+ * @category Predicate
+ */
+export const isSchema = (value: unknown): value is Schema => isBoolean(value) || isObject(value)
+
+const propertyIsType = (value: unknown, propertyName: string, expectedType: JsType) =>
+  isObject(value) && typeof value[propertyName] === expectedType
+
+/**
+ * @category Predicate
+ */
+export const isRef = (value: unknown): value is Reference => propertyIsType(value, '$ref', 'string')
+
+/**
+ * @category Predicate
+ */
+export const isAnchor = (value: unknown): value is Anchor =>
+  propertyIsType(value, '$anchor', 'string')
+
+/**
+ * @category Predicate
+ */
+export const isRecursiveRef = (value: unknown): value is RecursiveReference =>
+  propertyIsType(value, '$recursiveRef', 'string')
+
+/**
+ * @category Predicate
+ */
+export const isRecursiveAnchor = (value: unknown): value is RecursiveAnchor =>
+  propertyIsType(value, '$recursiveAnchor', 'boolean')
+
+/**
+ * @category Predicate
+ */
+export const isDynamicRef = (value: unknown): value is DynamicReference =>
+  propertyIsType(value, '$dynamicRef', 'string')
+
+/**
+ * @category Predicate
+ */
+export const isDynamicAnchor = (value: unknown): value is DynamicAnchor =>
+  propertyIsType(value, '$dynamicAnchor', 'string')
+
+/**
+ * @category Utility
+ */
+export const dropUriFragment = (uri: Uri, fragment = parse(uri).fragment): Uri => {
+  return fragment ? uri.substr(0, uri.length - (fragment.length + 1)) : uri
 }
 
-function propertyIsType(value: unknown, propertyName: string, expectedType: JsType): boolean {
-  return isObject(value) && typeof value[propertyName] === expectedType
+/**
+ * Takes a schema and returns the names of all properties of the passed value that are evaluated by it.
+ *
+ * @category Utility
+ *
+ * @param schema The schema to evaluate.
+ * @param value The value to evaluate against.
+ * @returns The evaluated property keys in value.
+ */
+export const getEvaluatedProperties = (schema: Schema, value: unknown): string[] => {
+  if (isBoolean(schema) || !isObject(value)) {
+    return []
+  }
+
+  return Object.keys(value).filter(
+    key =>
+      (isObject(schema.properties) && key in schema.properties) ||
+      (isObject(schema.patternProperties) &&
+        Object.keys(schema.patternProperties).some(pattern => key.match(new RegExp(pattern)))),
+  )
 }
 
-export function isRef(value: unknown): value is Reference {
-  return propertyIsType(value, '$ref', 'string')
-}
+/**
+ * Takes a schema and a value and returns the amount of items it evaluates.
+ *
+ * @category Utility
+ *
+ * @param schema The schema to evaluate.
+ * @param value The value to evaluate against.
+ * @returns The amount of evaluated items.
+ */
+export const getEvaluatedLength = (schema: Schema, value: unknown): number => {
+  if (isBoolean(schema) || !isArray(value)) {
+    return 0
+  }
 
-export function isAnchor(value: unknown): value is Anchor {
-  return propertyIsType(value, '$anchor', 'string')
-}
-
-export function isRecursiveRef(value: unknown): value is RecursiveReference {
-  return propertyIsType(value, '$recursiveRef', 'string')
-}
-
-export function isRecursiveAnchor(value: unknown): value is RecursiveAnchor {
-  return propertyIsType(value, '$recursiveAnchor', 'string')
-}
-
-export function isDynamicRef(value: unknown): value is DynamicReference {
-  return propertyIsType(value, '$dynamicRef', 'string')
-}
-
-export function isDynamicAnchor(value: unknown): value is DynamicAnchor {
-  return propertyIsType(value, '$dynamicAnchor', 'string')
+  return isSchema(schema.items) ? Infinity : schema.prefixItems?.length ?? 0
 }

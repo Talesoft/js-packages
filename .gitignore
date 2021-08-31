@@ -4,3 +4,4 @@ package-lock.json
 yarn.lock
 /packages/*/cjs
 /packages/*/esm
+/packages/*/docs

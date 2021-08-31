@@ -1,9 +1,15 @@
 {
-    "extends": "../../tsconfig.json",
-    "compilerOptions": {
-        "outDir": "esm"
-    },
-    "include": [
-        "./src"
-    ]
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "outDir": "esm"
+  },
+  "typedocOptions": {
+    "name": "Talesoft JSON-Schema",
+    "includeVersion": true,
+    "categorizeByGroup": true,
+    "hideGenerator": true
+  },
+  "include": [
+    "./src"
+  ]
 }
