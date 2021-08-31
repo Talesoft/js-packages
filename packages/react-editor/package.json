@@ -1,6 +1,5 @@
 {
   "name": "@talesoft/react-editor",
-  "version": "0.1.0",
   "license": "MIT",
   "main": "cjs/index.js",
   "types": "esm/index.d.ts",
