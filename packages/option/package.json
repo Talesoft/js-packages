@@ -4,6 +4,7 @@
   "license": "MIT",
   "main": "cjs/index.js",
   "types": "esm/index.d.ts",
+  "private": true,
   "scripts": {
     "build": "tsc && babel src --out-dir cjs --extensions .ts,.tsx --delete-dir-on-start",
     "test": "jest",

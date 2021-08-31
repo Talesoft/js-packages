@@ -4,6 +4,7 @@
   "license": "MIT",
   "main": "cjs/index.js",
   "types": "esm/index.d.ts",
+  "private": true,
   "description": "",
   "keywords": [],
   "scripts": {
