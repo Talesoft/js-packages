@@ -1,4 +1,4 @@
-import { random } from './random'
+import { createRandom } from './random'
 import each from 'jest-each'
 
 describe('random', () => {
@@ -12,7 +12,7 @@ describe('random', () => {
     [5000, 0.02629107586108148],
     [50000, 0.05413842527195811],
   ]).it('should, from seed %f, generate %f', (seed, expected) => {
-    expect(random(seed).value).toBe(expected)
+    expect(createRandom(seed).value).toBe(expected)
   })
   each([
     [1, 0.9683778982143849],
@@ -24,6 +24,6 @@ describe('random', () => {
     [5000, 0.04173311730846763],
     [50000, 0.3074705076869577],
   ]).it('should, from seed %f, generate %f after 4 seed-changes', (seed, expected) => {
-    expect(random(seed).next.next.next.next.value).toBe(expected)
+    expect(createRandom(seed).next.next.next.next.value).toBe(expected)
   })
 })

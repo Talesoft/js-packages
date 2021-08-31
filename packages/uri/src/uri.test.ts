@@ -16,6 +16,18 @@ describe('parse', () => {
       },
     ],
     [
+      'https://example.com/some/path#',
+      {
+        scheme: 'https',
+        userInfo: null,
+        host: 'example.com',
+        port: null,
+        path: '/some/path',
+        query: null,
+        fragment: '',
+      },
+    ],
+    [
       '//someone:somepass@example.com:443/example/path?a=1&b[]=12&b=test&c#testFragment',
       {
         scheme: null,

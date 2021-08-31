@@ -173,6 +173,7 @@ export const enterInstance = (key: string | number, context: Context): Context =
 export const enterBoth = (key: string | number, context: Context): Context => ({
   ...context,
   keywordLocation: `${context.keywordLocation}/${key}`,
+  absoluteKeywordLocation: `${context.absoluteKeywordLocation}/${key}`,
   instanceLocation: `${context.instanceLocation}/${key}`,
 })
 

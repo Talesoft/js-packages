@@ -44,10 +44,12 @@ export const validateWithContext = (
   value: unknown,
   context: Context,
 ): VerboseOutput => {
+  const rootContext: Context =
+    '' in context.schemas ? context : { ...context, schemas: { ...context.schemas, '': schema } }
   // Transform context (e.g. core operations register schemas and anchors)
   const transformedContext = Object.values(context.contextTransformers).reduce(
     (resultContext, transform) => transform(schema, resultContext),
-    context,
+    rootContext,
   )
   const validations = Object.values(context.validators).map(validate =>
     validate(schema, value, transformedContext),

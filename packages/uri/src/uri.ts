@@ -40,13 +40,13 @@ export const parse = (uri: Uri): UriComponents => {
   }
 
   return {
-    scheme: scheme || null,
-    userInfo: userinfo || null,
+    scheme: scheme ?? null,
+    userInfo: userinfo ?? null,
     host: host || null,
-    port: port ? toInteger(port) : null,
+    port: port !== undefined ? toInteger(port) : null,
     path: path || null,
-    query: query || null,
-    fragment: fragment || null,
+    query: query ?? null,
+    fragment: fragment ?? null,
   }
 }
 

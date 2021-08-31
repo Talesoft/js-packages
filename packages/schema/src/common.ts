@@ -128,7 +128,7 @@ export const isDynamicAnchor = (value: unknown): value is DynamicAnchor =>
  * @category Utility
  */
 export const dropUriFragment = (uri: Uri, fragment = parse(uri).fragment): Uri => {
-  return fragment ? uri.substr(0, uri.length - (fragment.length + 1)) : uri
+  return fragment !== null ? uri.substr(0, uri.length - (fragment.length + 1)) : uri
 }
 
 /**

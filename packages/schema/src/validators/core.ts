@@ -84,9 +84,10 @@ export const coreValidators: Record<string, Validator> = {
         localContext.error`Referenced schema of ref ${
           schema.$ref
         } (${uriWithoutFragment}) was not found.
-        Known schemas: ${Object.keys(localContext.schemas)}
-        Fragment: ${fragment}
-        URI without Fragment: ${uriWithoutFragment}`,
+
+Known schemas: ${Object.keys(localContext.schemas)}
+Fragment: ${fragment}
+URI without Fragment: ${uriWithoutFragment}`,
         localContext,
       )
     }
@@ -104,10 +105,16 @@ export const coreValidators: Record<string, Validator> = {
       // This is a JSON-Pointer. We resolve it in the loaded schema
       const resolvedSchema = resolvePointer<Schema>(fragment, loadedSchema)
 
-      if (!resolvedSchema) {
+      if (resolvedSchema === null) {
         return invalidOutput(
           [],
-          localContext.error`Referenced sub-schema of ref ${schema.$ref} (${fullUri}) could not be resolved`,
+          localContext.error`Referenced sub-schema of ref ${
+            schema.$ref
+          } (${fullUri}) could not be resolved.
+
+Known schemas: ${Object.keys(localContext.schemas)}
+Fragment: ${fragment}
+URI without Fragment: ${uriWithoutFragment}`,
           localContext,
         )
       }
@@ -120,7 +127,11 @@ export const coreValidators: Record<string, Validator> = {
 
     return invalidOutput(
       [],
-      localContext.error`Referenced anchor of ref ${schema.$ref} (${fullUri}) could not be resolved`,
+      localContext.error`Referenced anchor of ref ${schema.$ref} (${fullUri}) could not be resolved.
+
+Known schemas: ${Object.keys(localContext.schemas)}
+Fragment: ${fragment}
+URI without Fragment: ${uriWithoutFragment}`,
       localContext,
     )
   },

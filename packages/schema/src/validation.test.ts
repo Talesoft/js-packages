@@ -31,6 +31,7 @@ describe('validate', () => {
       { a: 'test' },
       context,
     )
+    console.log(invalidReferenceResult)
     expect(invalidReferenceResult).toEqual({
       valid: false,
       keywordLocation: '',
@@ -53,17 +54,20 @@ describe('validate', () => {
         {
           valid: false,
           keywordLocation: '/properties/a',
-          absoluteKeywordLocation: 'https://example.com/schema1.json#/properties',
+          absoluteKeywordLocation: 'https://example.com/schema1.json#/properties/a',
           instanceLocation: '/a',
           error: 'Validation failed',
         },
         {
           valid: false,
           keywordLocation: '/properties/a/$ref',
-          absoluteKeywordLocation: 'https://example.com/schema1.json#/properties/$ref',
+          absoluteKeywordLocation: 'https://example.com/schema1.json#/properties/a/$ref',
           instanceLocation: '/a',
-          error:
-            'Referenced sub-schema of ref "https://example.com/schema2.json#/$defs/bProperty" ("https://example.com/schema2.json#/$defs/bProperty") could not be resolved',
+          error: `Referenced sub-schema of ref "https://example.com/schema2.json#/$defs/bProperty" ("https://example.com/schema2.json#/$defs/bProperty") could not be resolved.
+
+Known schemas: ["https://example.com/schema2.json","","https://example.com/schema1.json"]
+Fragment: "/$defs/bProperty"
+URI without Fragment: "https://example.com/schema2.json"`,
         },
       ],
     })
@@ -98,7 +102,7 @@ describe('validate', () => {
         {
           valid: false,
           keywordLocation: '/properties/a',
-          absoluteKeywordLocation: 'https://example.com/schema1.json#/properties',
+          absoluteKeywordLocation: 'https://example.com/schema1.json#/properties/a',
           instanceLocation: '/a',
           error: 'Validation failed',
         },

@@ -22,7 +22,7 @@ describe('coreValidators', () => {
           properties: { a: { $ref: '#/$defs/test' } },
         },
         [{ a: 123 }],
-        { valid: true },
+        { valid: false },
       ],
       [
         'ref with id - valid',
@@ -44,7 +44,7 @@ describe('coreValidators', () => {
           properties: { a: { $ref: 'https://example.com/schema.json#/$defs/test' } },
         },
         [{ a: 123 }],
-        { valid: true },
+        { valid: false },
       ],
     ]).it('should correctly resolve schemas (%s)', (_, schema, values, expected) => {
       values.forEach((value: unknown) => expect(validateFlag(schema, value)).toEqual(expected))
