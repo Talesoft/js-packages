@@ -11,7 +11,7 @@
   },
   "scripts": {
     "build": "tsc && babel src --out-dir cjs --extensions .ts,.tsx --delete-dir-on-start",
-    "test": "jest",
+    "test": "jest --passWithNoTests",
     "lint": "eslint \"src/**/*.ts\"",
     "lint:fix": "eslint \"src/**/*.ts\" --fix"
   },
