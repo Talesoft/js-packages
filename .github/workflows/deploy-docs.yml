@@ -13,8 +13,8 @@ jobs:
       - uses: actions/setup-node@v2
       - name: Install dependencies
         run: yarn
-      - name: Generate
-        run: yarn docs:build
+      # - name: Generate
+      #   run: yarn docs:build
       - name: Test build schema
         run: cd packages/schema && yarn docs:build
       # - name: Create central directory
