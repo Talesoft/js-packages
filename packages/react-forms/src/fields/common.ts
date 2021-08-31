@@ -1,7 +1,7 @@
 import type { FormErrorImmutableList, ValidationState } from '../validation/common'
 import type { Record, Map } from 'immutable'
 
-export interface FieldState {
+export type FieldState = {
   readonly errors: FormErrorImmutableList
   readonly validationState: ValidationState
   readonly changed: boolean

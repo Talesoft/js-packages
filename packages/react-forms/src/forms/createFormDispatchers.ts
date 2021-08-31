@@ -1,16 +1,16 @@
-import { Map } from 'immutable'
-import { ValidationState } from '../validation/common'
 import type { ValidationError } from 'yup'
 import type { FormErrors, Validator } from '../validation/common'
 import type { FormOptions, FormImmutableState, FormDispatch } from './common'
+import { Map } from 'immutable'
+import { ValidationState } from '../validation/common'
 
-export interface ValidationResult<Value extends Record<string, unknown>> {
+export type ValidationResult<Value extends Record<string, unknown>> = {
   readonly value: Value
   readonly validationState: ValidationState
   readonly errors: FormErrors
 }
 
-export interface FormStateDispatchers<Value extends Record<string, unknown>> {
+export type FormStateDispatchers<Value extends Record<string, unknown>> = {
   readonly validate: () => Promise<ValidationResult<Value>>
   readonly registerField: (path: string) => void
   readonly unregisterField: (path: string) => void
@@ -22,14 +22,12 @@ export interface FormStateDispatchers<Value extends Record<string, unknown>> {
   readonly submit: () => Promise<void>
 }
 
-function isYupValidationError(error: Error): error is ValidationError {
-  /* We don't use instanceof to avoid a hard dependency on yup */
-  return error.name === 'ValidationError'
-}
+const isYupValidationError = (error: unknown): error is ValidationError =>
+  error instanceof Error && error.name === 'ValidationError'
 
-function createValidator<Value extends Record<string, unknown>>(
+const createValidator = <Value extends Record<string, unknown>>(
   options: FormOptions<Value>,
-): Validator<Value> | undefined {
+): Validator<Value> | undefined => {
   if (options.validate) {
     return options.validate
   }
@@ -66,15 +64,13 @@ function createValidator<Value extends Record<string, unknown>>(
   }
 }
 
-export default function createFormDispatchers<Value extends Record<string, unknown>>(
+const createFormDispatchers = <Value extends Record<string, unknown>>(
   options: FormOptions<Value>,
   state: FormImmutableState<Value>,
   dispatch: FormDispatch,
-): FormStateDispatchers<Value> {
-  function getValue(): Value {
-    return state.get('value').toJS() as Value
-  }
-  async function validate(): Promise<ValidationResult<Value>> {
+): FormStateDispatchers<Value> => {
+  const getValue = () => state.get('value').toJS() as Value
+  const validate = async () => {
     const value = getValue()
     const validateValue = createValidator(options)
     if (!validateValue) {
@@ -86,28 +82,26 @@ export default function createFormDispatchers<Value extends Record<string, unkno
     const validationState = entries.length > 0 ? ValidationState.INVALID : ValidationState.VALID
     return { value, validationState, errors }
   }
-  function registerField(path: string): void {
+  const registerField = (path: string) => {
     dispatch({ type: 'registerField', path })
   }
-  function unregisterField(path: string): void {
+  const unregisterField = (path: string) => {
     dispatch({ type: 'unregisterField', path })
   }
-  function getFieldValue<Value = unknown>(path: string): Value {
-    return state.get('value').getIn(path.split('.'))
-  }
-  function setFieldValue<Value>(path: string, value: Value): void {
+  const getFieldValue = (path: string) => state.get('value').getIn(path.split('.'))
+  const setFieldValue = <Value>(path: string, value: Value) => {
     dispatch({ type: 'setFieldValue', path, value })
   }
-  function reset(): void {
+  const reset = () => {
     dispatch({ type: 'reset' })
   }
-  function beginSubmit(): void {
+  const beginSubmit = () => {
     dispatch({ type: 'beginSubmit' })
   }
-  function finishSubmit(): void {
+  const finishSubmit = () => {
     dispatch({ type: 'finishSubmit' })
   }
-  async function submit(): Promise<void> {
+  const submit = async () => {
     beginSubmit()
     const { value, validationState } = await validate()
     if (validationState === ValidationState.VALID) {
@@ -127,3 +121,5 @@ export default function createFormDispatchers<Value extends Record<string, unkno
     submit,
   }
 }
+
+export default createFormDispatchers

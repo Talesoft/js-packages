@@ -1,16 +1,19 @@
-import useFieldArray from './useFieldArray'
 import type { PropsWithChildren, ReactNode } from 'react'
 import type { FieldArrayDispatchers } from './useFieldArray'
+import useFieldArray from './useFieldArray'
 
-export interface FieldArrayProps<Value> {
+export type FieldArrayProps<Value> = {
   readonly name: string
   readonly children: (dispatchers: FieldArrayDispatchers<Value>) => ReactNode
 }
 
-export default function FieldArray<Value extends Record<string, unknown>>({
-  name,
-  children,
-}: PropsWithChildren<FieldArrayProps<Value>>): JSX.Element {
+export type FieldArrayComponent = <Value>(
+  props: PropsWithChildren<FieldArrayProps<Value>>,
+) => JSX.Element
+
+const FieldArray: FieldArrayComponent = ({ name, children }) => {
   const dispatchers = useFieldArray(name)
   return <>{children(dispatchers)}</>
 }
+
+export default FieldArray

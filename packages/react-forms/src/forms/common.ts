@@ -4,7 +4,7 @@ import type { Record as ImmutableRecord, Map } from 'immutable'
 import type { FormFieldImmutableStateMap } from '../fields/common'
 import type { FormError, ValidationState, Validator } from '../validation/common'
 
-export interface FormState<Value extends Record<string, unknown>> {
+export type FormState<Value extends Record<string, unknown>> = {
   readonly initialValue: Value
   readonly value: Map<string, unknown>
   readonly submitting: boolean
@@ -30,7 +30,7 @@ export type FormImmutableState<Value extends Record<string, unknown>> = Immutabl
 
 export type SubmitHandler<Value> = (value: Value) => Promise<void> | void
 
-export interface FormOptions<Value extends Record<string, unknown>> {
+export type FormOptions<Value extends Record<string, unknown>> = {
   readonly initialValue: Value
   readonly onSubmit?: SubmitHandler<Value>
   readonly validate?: Validator<Value>

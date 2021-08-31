@@ -1,12 +1,12 @@
 export type TryCatchFunction = {
-  <Result, ErrorType = Error>(handler: () => Result): Result | ErrorType
-  <Result, ErrorResult = Result, ErrorType = Error>(
+  <Result, ErrorType = unknown>(handler: () => Result): Result | ErrorType
+  <Result, ErrorResult = Result, ErrorType = unknown>(
     handler: () => Result,
     errorHandler: (error: ErrorType) => ErrorResult,
   ): Result | ErrorResult
 }
 
-const tryCatch: TryCatchFunction = <Result, ErrorResult = Result, ErrorType = Error>(
+const tryCatch: TryCatchFunction = <Result, ErrorResult = Result, ErrorType = unknown>(
   handler: () => Result,
   errorHandler?: (error: ErrorType) => ErrorResult,
 ): Result | ErrorResult | ErrorType => {
@@ -14,7 +14,7 @@ const tryCatch: TryCatchFunction = <Result, ErrorResult = Result, ErrorType = Er
   try {
     return handler()
   } catch (error) {
-    return errorHandler === undefined ? error : errorHandler(error)
+    return errorHandler === undefined ? (error as ErrorType) : errorHandler(error as ErrorType)
   }
 }
 export default tryCatch

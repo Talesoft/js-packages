@@ -4,6 +4,7 @@ import { getEvaluatedProperties, isSchema } from '../common'
 import { isBoolean, isArray, isObject, isString } from '@talesoft/types'
 import { enterBoth, enterInstance, enterKeyword } from '../contexts'
 import { combineOutputs, invalidOutput, validOutput } from '../outputs'
+import type { Schema } from '../standard/meta/schema'
 
 /**
  * @category Validator Applicator
@@ -115,7 +116,7 @@ export const applicatorValidators: Record<string, Validator> = {
       if (!(key in value)) {
         return validOutput([], keyContext)
       }
-      return validateVerbose(schema, value[key], keyContext)
+      return validateVerbose(schema as Schema<unknown>, value[key], keyContext)
     })
 
     return combineOutputs(
@@ -138,7 +139,7 @@ export const applicatorValidators: Record<string, Validator> = {
       const matchingKeys = Object.keys(value).filter(key => key.match(regex) !== null)
       const keyResults = matchingKeys.map(key => {
         const keyContext = enterInstance(key, patternContext)
-        return validateVerbose(schema, value[key], keyContext)
+        return validateVerbose(schema as Schema<unknown>, value[key], keyContext)
       })
 
       return combineOutputs(
@@ -167,7 +168,7 @@ export const applicatorValidators: Record<string, Validator> = {
       if (!(key in value)) {
         return validOutput([], keyContext)
       }
-      return validateVerbose(schema, value, keyContext)
+      return validateVerbose(schema as Schema<unknown>, value, keyContext)
     })
 
     return combineOutputs(

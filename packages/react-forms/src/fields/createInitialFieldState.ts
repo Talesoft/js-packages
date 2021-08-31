@@ -1,6 +1,6 @@
+import type { FieldState, FormFieldImmutableState } from './common'
 import { Record, List } from 'immutable'
 import { ValidationState } from '../validation/common'
-import type { FieldState, FormFieldImmutableState } from './common'
 
 const createRecord = Record({
   errors: List(),
@@ -8,6 +8,4 @@ const createRecord = Record({
   changed: false,
 } as Readonly<FieldState>)
 
-export default function createInitialFieldState(): FormFieldImmutableState {
-  return createRecord()
-}
+export default (): FormFieldImmutableState => createRecord()

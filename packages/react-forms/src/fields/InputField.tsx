@@ -1,11 +1,10 @@
-import useField from './useField'
 import type { DetailedHTMLProps, HTMLProps, InputHTMLAttributes } from 'react'
+import useField from './useField'
 
 export type InputProps = HTMLProps<HTMLInputElement>
-
 export type InputValue = string | number | boolean | File | FileList | null
 
-function toScriptValue(target: HTMLInputElement): InputValue {
+const toScriptValue = (target: HTMLInputElement): InputValue => {
   switch (target.type) {
     case 'file':
       return target.multiple ? target.files : target.files?.[0] ?? null
@@ -23,10 +22,10 @@ function toScriptValue(target: HTMLInputElement): InputValue {
   }
 }
 
-function toFieldValueProps(
+const toFieldValueProps = (
   inputProps: InputProps,
   value: InputValue,
-): DetailedHTMLProps<InputHTMLAttributes<HTMLInputElement>, HTMLInputElement> {
+): DetailedHTMLProps<InputHTMLAttributes<HTMLInputElement>, HTMLInputElement> => {
   switch (inputProps.type) {
     case 'file':
       return {}
@@ -54,10 +53,12 @@ function toFieldValueProps(
   }
 }
 
-export default function InputField(props: InputProps): JSX.Element {
+const InputField = (props: InputProps): JSX.Element => {
   const { value, setValue } = useField<InputValue>(props.name ?? '')
   const valueProps = toFieldValueProps(props, value)
   return (
     <input {...props} {...valueProps} onChange={event => setValue(toScriptValue(event.target))} />
   )
 }
+
+export default InputField

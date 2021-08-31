@@ -1,8 +1,9 @@
-import { useMemo, ReactElement } from 'react'
+import type { ReactElement } from 'react'
+import { useMemo } from 'react'
 import useField from './useField'
 import { fromJS, List } from 'immutable'
 
-export interface FieldArrayMapHelpers<Value> {
+export type FieldArrayMapHelpers<Value> = {
   readonly key: number
   readonly childName: (path: string) => string
   readonly insertBefore: (value: Value) => void
@@ -10,7 +11,7 @@ export interface FieldArrayMapHelpers<Value> {
   readonly remove: () => void
 }
 
-export interface FieldArrayDispatchers<Value> {
+export type FieldArrayDispatchers<Value> = {
   readonly push: (...values: Value[]) => void
   readonly pop: () => void
   readonly unshift: (...values: Value[]) => void
@@ -18,11 +19,9 @@ export interface FieldArrayDispatchers<Value> {
   readonly map: (mapFn: (helpers: FieldArrayMapHelpers<Value>) => ReactElement) => void
 }
 
-function isList(value: unknown): value is List<unknown> {
-  return value instanceof List
-}
+const isList = (value: unknown): value is List<unknown> => value instanceof List
 
-export default function useFieldArray<Value>(name: string): FieldArrayDispatchers<Value> {
+const useFieldArray = <Value>(name: string): FieldArrayDispatchers<Value> => {
   const { immutableValue, setValue } = useField(name)
 
   if (!isList(immutableValue)) {
@@ -54,3 +53,5 @@ export default function useFieldArray<Value>(name: string): FieldArrayDispatcher
     [immutableValue],
   )
 }
+
+export default useFieldArray

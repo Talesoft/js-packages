@@ -12,8 +12,8 @@ const createRecord = ImmutableRecord<FormState<Record<string, unknown>>>({
   fieldStates: Map(),
 })
 
-export default function createInitialFormState<Value extends Record<string, unknown>>(
+const createInitialFormState = <Value extends Record<string, unknown>>(
   initialValue: Value,
-): FormImmutableState<Value> {
-  return createRecord({ initialValue, value: fromJS(initialValue) }) as FormImmutableState<Value>
-}
+): FormImmutableState<Value> =>
+  createRecord({ initialValue, value: fromJS(initialValue) }) as FormImmutableState<Value>
+export default createInitialFormState

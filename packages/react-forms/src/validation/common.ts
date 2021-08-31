@@ -1,8 +1,8 @@
 import type { Map, List, Seq } from 'immutable'
 
-export interface FormError<
-  Parameters extends FormErrorImmutableParameterMap = FormErrorImmutableParameterMap
-> {
+export type FormError<
+  Parameters extends FormErrorImmutableParameterMap = FormErrorImmutableParameterMap,
+> = {
   readonly message: string
   readonly parameters: Parameters
 }

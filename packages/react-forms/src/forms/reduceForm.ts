@@ -1,13 +1,13 @@
+import type { FormAction, FormImmutableState } from './common'
 import createInitialFieldState from '../fields/createInitialFieldState'
 import createInitialFormState from './createInitialFormState'
 import { List } from 'immutable'
 import { ValidationState } from '../validation/common'
-import type { FormAction, FormImmutableState } from './common'
 
-export default function reduceForm<Value extends Record<string, unknown>>(
+const reduceForm = <Value extends Record<string, unknown>>(
   state: FormImmutableState<Value>,
   action: FormAction,
-): FormImmutableState<Value> {
+): FormImmutableState<Value> => {
   switch (action.type) {
     case 'reset':
       return createInitialFormState(state.get('initialValue'))
@@ -53,3 +53,5 @@ export default function reduceForm<Value extends Record<string, unknown>>(
       })
   }
 }
+
+export default reduceForm

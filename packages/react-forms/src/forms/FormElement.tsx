@@ -1,13 +1,10 @@
+import type { PropsWithChildren, FormEvent, HTMLAttributes } from 'react'
 import { useCallback } from 'react'
 import useFormContext from './useFormContext'
-import type { PropsWithChildren, FormEvent, HTMLAttributes } from 'react'
 
 export type FormProps = HTMLAttributes<HTMLFormElement>
 
-export default function FormElement({
-  children,
-  ...formProps
-}: PropsWithChildren<FormProps>): JSX.Element {
+const FormElement = ({ children, ...formProps }: PropsWithChildren<FormProps>): JSX.Element => {
   const { submit, reset } = useFormContext()
   const onSubmit = useCallback(
     (event: FormEvent) => {
@@ -29,3 +26,4 @@ export default function FormElement({
     </form>
   )
 }
+export default FormElement

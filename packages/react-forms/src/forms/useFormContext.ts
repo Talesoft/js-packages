@@ -1,8 +1,6 @@
+import type { FormContextValue } from './FormContext'
 import { useContext } from 'react'
-import FormContext, { FormContextValue } from './FormContext'
+import FormContext from './FormContext'
 
-export default function useFormContext<
-  Value extends Record<string, unknown>
->(): FormContextValue<Value> {
-  return useContext(FormContext) as FormContextValue<Value>
-}
+export default <Value extends Record<string, unknown>>(): FormContextValue<Value> =>
+  useContext(FormContext) as FormContextValue<Value>

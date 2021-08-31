@@ -1,14 +1,14 @@
+import type { HTMLProps } from 'react'
 import useFieldErrors from './useFieldErrors'
 import { ValidationState } from '../validation/common'
-import type { HTMLProps } from 'react'
 
 type UlProps = HTMLProps<HTMLUListElement>
 
-export interface ErrorMessageListProps extends UlProps {
+export type ErrorMessageListProps = {
   readonly name: string
-}
+} & UlProps
 
-export default function ErrorMessageList({ name, ...ulProps }: ErrorMessageListProps): JSX.Element {
+const ErrorMessageList = ({ name, ...ulProps }: ErrorMessageListProps): JSX.Element => {
   const { errors, validationState } = useFieldErrors(name)
   if (validationState !== ValidationState.INVALID || errors.size < 1) {
     return <></>
@@ -21,3 +21,4 @@ export default function ErrorMessageList({ name, ...ulProps }: ErrorMessageListP
     </ul>
   )
 }
+export default ErrorMessageList

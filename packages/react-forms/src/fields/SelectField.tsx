@@ -1,9 +1,9 @@
-import useField from './useField'
 import type { HTMLProps } from 'react'
+import useField from './useField'
 
 export type SelectProps = HTMLProps<HTMLSelectElement>
 
-export default function SelectField(props: SelectProps): JSX.Element {
+const SelectField = (props: SelectProps): JSX.Element => {
   const { value, setValue } = useField<string | string[]>(props.name ?? '')
   return (
     <select
@@ -21,3 +21,5 @@ export default function SelectField(props: SelectProps): JSX.Element {
     />
   )
 }
+
+export default SelectField
