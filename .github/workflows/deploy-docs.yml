@@ -13,16 +13,16 @@ jobs:
       - uses: actions/setup-node@v2
       - name: Install dependencies
         run: yarn
-      # - name: Generate
-      #   run: yarn docs:build
-      - name: Test build schema
-        run: cd packages/schema && yarn docs:build
-      # - name: Create central directory
-      #   run: mkdir -p docs
-      # - name: Consolidate
-      #   run: mv packages/*/docs/* docs
-      # - name: Deploy
-      #   uses: JamesIves/github-pages-deploy-action@4.1.4
-      #   with:
-      #     branch: docs
-      #     folder: docs
+      - name: Build
+        run: yarn build
+      - name: Build docs
+        run: yarn docs:build
+      - name: Create central directory
+        run: mkdir -p docs
+      - name: Consolidate
+        run: mv packages/*/docs/* docs
+      - name: Deploy
+        uses: JamesIves/github-pages-deploy-action@4.1.4
+        with:
+          branch: docs
+          folder: docs
