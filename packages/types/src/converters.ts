@@ -1,23 +1,11 @@
-export function toUndefinable<Value>(value: Value): Value | undefined {
-  return value || undefined
-}
+export const toUndefinable = <Value>(value: Value): Value | undefined => value ?? undefined
 
-export function toNullable<Value>(value: Value): Value | null {
-  return value || null
-}
+export const toNullable = <Value>(value: Value): Value | null => value ?? null
 
-export function toBoolean(value: unknown): boolean {
-  return Boolean(value)
-}
+export const toBoolean = (value: unknown): boolean => Boolean(value)
 
-export function toString(value: unknown): string {
-  return String(value)
-}
+export const toString = (value: unknown): string => String(value)
 
-export function toNumber(value: unknown): number {
-  return Number(value)
-}
+export const toNumber = (value: unknown): number => Number(value)
 
-export function toInteger(value: unknown): number {
-  return parseInt(value as string)
-}
+export const toInteger = (value: unknown): number => parseInt(value as string, 10)
