@@ -27,6 +27,7 @@
     "publish": "lerna publish",
     "storybook:react-forms": "lerna run storybook --parallel --scope=@talesoft/react-forms",
     "storybook:react-yahtzee": "lerna run storybook --parallel --scope=@talesoft/react-yahtzee",
+    "docs:build": "lerna run docs:build --no-bail",
     "docs:build:schema": "lerna run docs:build --no-bail --scope=@talesoft/schema",
     "docs:serve:schema": "lerna run docs:serve --parallel --scope=@talesoft/schema",
     "postinstall": "yarn bootstrap"

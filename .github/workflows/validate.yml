@@ -1,24 +1,23 @@
-name: Validate Build
+name: Validate
 
 on: [push]
 
 jobs:
-  test:
+  install:
     runs-on: ubuntu-latest
     strategy:
       matrix:
         nodeVersion: ['12', '14', '16']
-
-    name: Unit tests (Node ${{ matrix.nodeVersion }})
-
+    name: Validate (Node ${{ matrix.nodeVersion }})
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v2
         with:
           node-version: ${{ matrix.nodeVersion }}
-
       - name: Install dependencies
         run: yarn
-
-      - name: Run unit tests
+      # - name: Lint
+      #   run: yarn lint
+      - name: Test
         run: yarn test
+  

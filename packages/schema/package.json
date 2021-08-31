@@ -9,8 +9,8 @@
     "test": "jest --passWithNoTests",
     "lint": "eslint \"src/**/*.ts\"",
     "lint:fix": "eslint \"src/**/*.ts\" --fix",
-    "docs:build": "typedoc --categorizeByGroup --out docs src/index.ts",
-    "docs:serve": "typedoc --categorizeByGroup --out docs src/index.ts && serve docs"
+    "docs:build": "typedoc --out docs/schema src/index.ts",
+    "docs:serve": "typedoc --out docs/schema src/index.ts && serve docs/schema"
   },
   "devDependencies": {
     "@talesoft/equals": "^0.1.2",
