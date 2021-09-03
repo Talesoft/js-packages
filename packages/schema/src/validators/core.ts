@@ -3,13 +3,14 @@ import type { Schema } from '../standard/meta/schema'
 import type { ContextTransformer, Context } from '../contexts'
 import { setBaseUri } from '../contexts'
 import { validateWithContext } from '../validation'
-import { dropUriFragment, isAnchor, isRef } from '../common'
+import { dropUriFragment } from '../common'
 import { isBoolean, isString } from '@talesoft/types'
 import { parse } from '@talesoft/uri'
 import { resolve as resolvePointer } from '@talesoft/json-pointer'
 import { resolve as resolveUri } from '@talesoft/uri'
 import { enterKeyword } from '../contexts'
 import { invalidOutput } from '../outputs'
+import { isAnchor, isRef } from '../predicates'
 
 /**
  * @category Context Transformer Core

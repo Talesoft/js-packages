@@ -1,7 +1,6 @@
 import type { SimpleType } from '../standard/meta/validation'
 import type { Validator } from '../validation'
 import { validateFlag } from '../validation'
-import { isSchema } from '../common'
 import {
   isNull,
   isBoolean,
@@ -14,12 +13,13 @@ import {
 import equals from '@talesoft/equals'
 import { combineOutputs, invalidOutput, validOutput } from '../outputs'
 import { enterInstance, enterKeyword } from '../contexts'
+import { isSchema } from '../predicates'
 
 /**
  * @category Validator
  * @internal
  */
-const getValueSimpleType = (value: unknown): SimpleType => {
+export const getValueSimpleType = (value: unknown): SimpleType => {
   if (isNull(value)) {
     return 'null'
   }

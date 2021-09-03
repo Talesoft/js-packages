@@ -1,16 +1,9 @@
-import type {
-  Reference,
-  Anchor,
-  RecursiveReference,
-  RecursiveAnchor,
-  DynamicReference,
-  DynamicAnchor,
-} from './schemas'
 import type { SimpleType } from './standard/meta/validation'
 import type { Schema } from './standard/meta/schema'
 import type { Uri } from '@talesoft/uri'
 import { isArray, isBoolean, isObject } from '@talesoft/types'
 import { parse } from '@talesoft/uri'
+import { isSchema } from './predicates'
 
 /**
  * @category Utility
@@ -74,56 +67,12 @@ export const jsTypeMap: Record<JsType, SimpleType> = {
 export const defaults: Record<SimpleType, unknown> = {
   string: '',
   number: 0,
-  array: [],
   boolean: false,
   integer: 0,
   null: null,
+  array: [],
   object: {},
 }
-
-/**
- * @category Predicate
- */
-export const isSchema = (value: unknown): value is Schema => isBoolean(value) || isObject(value)
-
-const propertyIsType = (value: unknown, propertyName: string, expectedType: JsType) =>
-  isObject(value) && typeof value[propertyName] === expectedType
-
-/**
- * @category Predicate
- */
-export const isRef = (value: unknown): value is Reference => propertyIsType(value, '$ref', 'string')
-
-/**
- * @category Predicate
- */
-export const isAnchor = (value: unknown): value is Anchor =>
-  propertyIsType(value, '$anchor', 'string')
-
-/**
- * @category Predicate
- */
-export const isRecursiveRef = (value: unknown): value is RecursiveReference =>
-  propertyIsType(value, '$recursiveRef', 'string')
-
-/**
- * @category Predicate
- */
-export const isRecursiveAnchor = (value: unknown): value is RecursiveAnchor =>
-  propertyIsType(value, '$recursiveAnchor', 'boolean')
-
-/**
- * @category Predicate
- */
-export const isDynamicRef = (value: unknown): value is DynamicReference =>
-  propertyIsType(value, '$dynamicRef', 'string')
-
-/**
- * @category Predicate
- */
-export const isDynamicAnchor = (value: unknown): value is DynamicAnchor =>
-  propertyIsType(value, '$dynamicAnchor', 'string')
-
 /**
  * @category Utility
  */

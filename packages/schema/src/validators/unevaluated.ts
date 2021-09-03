@@ -1,9 +1,10 @@
 import type { Validator } from '../validation'
 import { validateWithContext } from '../validation'
-import { getEvaluatedLength, getEvaluatedProperties, isSchema } from '../common'
+import { getEvaluatedLength, getEvaluatedProperties } from '../common'
 import { isBoolean, isArray, isObject } from '@talesoft/types'
 import { enterBoth, enterInstance, enterKeyword } from '../contexts'
 import { combineOutputs, validOutput } from '../outputs'
+import { isSchema } from '../predicates'
 
 /**
  * @category Validator - Unevaluated

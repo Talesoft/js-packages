@@ -1,10 +1,11 @@
 import type { Validator } from '../validation'
+import type { Schema } from '../standard/meta/schema'
 import { validateWithContext, validateVerbose } from '../validation'
-import { getEvaluatedProperties, isSchema } from '../common'
+import { getEvaluatedProperties } from '../common'
 import { isBoolean, isArray, isObject, isString } from '@talesoft/types'
 import { enterBoth, enterInstance, enterKeyword } from '../contexts'
 import { combineOutputs, invalidOutput, validOutput } from '../outputs'
-import type { Schema } from '../standard/meta/schema'
+import { isSchema } from '../predicates'
 
 /**
  * @category Validator Applicator
@@ -262,12 +263,12 @@ export const applicatorValidators: Record<string, Validator> = {
 
   // anyOf
   anyOf: (schema, value, context) => {
-    if (isBoolean(schema) || !isArray(schema.allOf)) {
+    if (isBoolean(schema) || !isArray(schema.anyOf)) {
       return null
     }
 
-    const localContext = enterKeyword('allOf', context)
-    const results = schema.allOf.map((possibleSchema, index) => {
+    const localContext = enterKeyword('anyOf', context)
+    const results = schema.anyOf.map((possibleSchema, index) => {
       const schemaContext = enterKeyword(index, localContext)
       return validateWithContext(possibleSchema, value, schemaContext)
     })
@@ -284,12 +285,12 @@ export const applicatorValidators: Record<string, Validator> = {
 
   // oneOf
   oneOf: (schema, value, context) => {
-    if (isBoolean(schema) || !isArray(schema.allOf)) {
+    if (isBoolean(schema) || !isArray(schema.oneOf)) {
       return null
     }
 
     const localContext = enterKeyword('oneOf', context)
-    const results = schema.allOf.map((possibleSchema, index) => {
+    const results = schema.oneOf.map((possibleSchema, index) => {
       const schemaContext = enterKeyword(index, localContext)
       return validateWithContext(possibleSchema, value, schemaContext)
     })
